@@ -6,10 +6,12 @@ function CreateSession() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     subject: '',
+    topic: '',
+    grade: '',
     date: '',
     time: '',
     duration: 60,
-    capacity: 1,
+    availableSlots: 1,
     fee: ''
   });
 
@@ -21,6 +23,13 @@ function CreateSession() {
     'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Economics',
     'Literature', 'Art', 'Music', 'Foreign Languages', 'Test Prep',
     'SAT/ACT', 'GRE', 'GMAT', 'LSAT', 'MCAT', 'Other'
+  ];
+
+  const grades = [
+    'Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5',
+    'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12',
+    'College Freshman', 'College Sophomore', 'College Junior', 'College Senior',
+    'Graduate', 'Adult'
   ];
 
   const durationOptions = [
@@ -52,6 +61,8 @@ function CreateSession() {
     const newErrors = {};
 
     if (!formData.subject.trim()) newErrors.subject = 'Please select a subject';
+    if (!formData.topic.trim()) newErrors.topic = 'Please enter a topic';
+    if (!formData.grade.trim()) newErrors.grade = 'Please select a grade level';
     if (!formData.date) newErrors.date = 'Please select a date';
     else {
       const selectedDate = new Date(formData.date);
@@ -66,6 +77,11 @@ function CreateSession() {
     }
     if (!formData.time) newErrors.time = 'Please select a time';
     if (!formData.duration) newErrors.duration = 'Please select session duration';
+    if (!formData.availableSlots || formData.availableSlots < 1) {
+      newErrors.availableSlots = 'Please enter available slots (minimum 1)';
+    } else if (isNaN(formData.availableSlots) || parseInt(formData.availableSlots) < 1) {
+      newErrors.availableSlots = 'Please enter a valid number of slots';
+    }
     if (!formData.fee) newErrors.fee = 'Please enter the session fee';
     else if (isNaN(formData.fee) || parseFloat(formData.fee) <= 0) {
       newErrors.fee = 'Please enter a valid fee amount';
@@ -85,8 +101,11 @@ function CreateSession() {
         
         const payload = {
           subject: formData.subject,
+          topic: formData.topic.trim(),
+          grade: formData.grade,
           date: sessionDateTime,
           duration: parseInt(formData.duration),
+          availableSlots: parseInt(formData.availableSlots),
           fee: parseFloat(formData.fee)
         };
 
@@ -118,7 +137,7 @@ function CreateSession() {
           <form onSubmit={handleSubmit} className="p-6 lg:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Subject Selection */}
-              <div className="lg:col-span-2">
+              <div>
                 <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
                   Subject *
                 </label>
@@ -137,6 +156,47 @@ function CreateSession() {
                   ))}
                 </select>
                 {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject}</p>}
+              </div>
+
+              {/* Grade Selection */}
+              <div>
+                <label htmlFor="grade" className="block text-sm font-medium text-gray-700 mb-2">
+                  Grade Level *
+                </label>
+                <select
+                  id="grade"
+                  name="grade"
+                  value={formData.grade}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                    errors.grade ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">Select a grade</option>
+                  {grades.map(grade => (
+                    <option key={grade} value={grade}>{grade}</option>
+                  ))}
+                </select>
+                {errors.grade && <p className="mt-1 text-sm text-red-600">{errors.grade}</p>}
+              </div>
+
+              {/* Topic */}
+              <div className="lg:col-span-2">
+                <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-2">
+                  Topic *
+                </label>
+                <input
+                  type="text"
+                  id="topic"
+                  name="topic"
+                  value={formData.topic}
+                  onChange={handleChange}
+                  placeholder="e.g., Algebra Basics, World War II, Organic Chemistry"
+                  className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                    errors.topic ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                />
+                {errors.topic && <p className="mt-1 text-sm text-red-600">{errors.topic}</p>}
               </div>
 
               {/* Date and Time */}
@@ -175,7 +235,7 @@ function CreateSession() {
                 {errors.time && <p className="mt-1 text-sm text-red-600">{errors.time}</p>}
               </div>
 
-              {/* Duration and Capacity */}
+              {/* Duration and Available Slots */}
               <div>
                 <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
                   Session Duration *
@@ -194,6 +254,24 @@ function CreateSession() {
                   ))}
                 </select>
                 {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="availableSlots" className="block text-sm font-medium text-gray-700 mb-2">
+                  Available Slots *
+                </label>
+                <input
+                  type="number"
+                  id="availableSlots"
+                  name="availableSlots"
+                  min="1"
+                  value={formData.availableSlots}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                    errors.availableSlots ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                />
+                {errors.availableSlots && <p className="mt-1 text-sm text-red-600">{errors.availableSlots}</p>}
               </div>
 
               {/* Fee */}

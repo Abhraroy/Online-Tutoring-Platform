@@ -116,8 +116,13 @@ export const bookSession = async (req, res) => {
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }
-    session.status = "booked";
-    await session.save();
+    
+    // Check if session has available slots
+    if (session.availableSlots <= 0) {
+      return res.status(400).json({ message: "Session is fully booked" });
+    }
+    
+    // Check if student already booked this session
     const existingBooking = await BookingModel.findOne({
       sessionId,
       studentId,
@@ -127,12 +132,23 @@ export const bookSession = async (req, res) => {
       return res.status(400).json({ message: "Session already booked" });
     }
 
+    // Create the booking
     const newBooking = await BookingModel.create({
       sessionId,
       tutorId: session.tutorId,
       studentId: studentId,
       status: "confirmed",
     });
+
+    // Decrement available slots
+    session.availableSlots -= 1;
+    
+    // Only mark as "booked" when all slots are filled
+    if (session.availableSlots === 0) {
+      session.status = "booked";
+    }
+    
+    await session.save();
 
     res
       .status(200)
@@ -155,18 +171,54 @@ export const getSessions = async (req, res) => {
     if (date) filter.date = new Date(date); // ensure it's a Date
     if (status) filter.status = status;
     if (grade) filter.grade = grade;
-    filter.status = "pending";
+    // Filter by available slots > 0 instead of just status === "pending"
+    // This allows sessions with available slots to show even if some students have booked
+    filter.availableSlots = { $gt: 0 };
     filter.date = { $gte: new Date() };
     const sessions = await SessionModel.find(filter).populate(
       "tutorId",
-      "name email subject grade"
+      "name email subject grade availableSlots topic"
     );
-    if (sessions.length === 0) {
+    
+    // Get booking counts for all sessions in a single aggregation query
+    const sessionIds = sessions.map(s => s._id);
+    const bookingCounts = await BookingModel.aggregate([
+      {
+        $match: {
+          sessionId: { $in: sessionIds },
+          status: "confirmed"
+        }
+      },
+      {
+        $group: {
+          _id: "$sessionId",
+          bookedCount: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    // Create a map of sessionId -> bookedCount for quick lookup
+    const bookingMap = {};
+    bookingCounts.forEach(item => {
+      bookingMap[item._id.toString()] = item.bookedCount;
+    });
+    
+    // Map sessions to include capacity and tutorName for frontend compatibility
+    const mappedSessions = sessions.map(session => {
+      const sessionObj = session.toObject();
+      const bookedCount = bookingMap[session._id.toString()] || 0;
+      // Calculate total capacity: availableSlots + confirmed bookings
+      sessionObj.capacity = bookedCount + session.availableSlots;
+      sessionObj.tutorName = session.tutorId?.name || "Unknown";
+      return sessionObj;
+    });
+    
+    if (mappedSessions.length === 0) {
       return res.status(404).json({ message: "No sessions found" });
     }
     res
       .status(200)
-      .json({ message: "Sessions fetched successfully", sessions });
+      .json({ message: "Sessions fetched successfully", sessions: mappedSessions });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -180,7 +232,7 @@ export const getBookedSessions = async (req, res) => {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
     const sessions = await BookingModel.find({ studentId, status: "confirmed" })
-      .populate("sessionId", "subject date duration capacity fee")
+      .populate("sessionId", "subject date duration capacity fee availableSlots status topic grade")
       .populate("tutorId", "name email");
     if (sessions.length === 0) {
       return res.status(404).json({ message: "No sessions found" });
@@ -227,12 +279,23 @@ export const deleteBookedSession = async (req, res) => {
   try {
     const {sessionId} = req.params;
     const bookingSession = await BookingModel.findById(sessionId);
-    const session = await SessionModel.findById({_id: bookingSession.sessionId}).populate("tutorId");
-    if(!bookingSession || !session){
+    if(!bookingSession){
+      return res.status(404).json({message: "Booking not found"});
+    }
+    const session = await SessionModel.findById(bookingSession.sessionId).populate("tutorId");
+    if(!session){
       return res.status(404).json({message: "Session not found"});
     }
     await bookingSession.deleteOne();
-    session.status = "pending";
+    
+    // Increment available slots when booking is cancelled
+    session.availableSlots += 1;
+    
+    // If slots become available, change status back to "pending"
+    if (session.availableSlots > 0) {
+      session.status = "pending";
+    }
+    
     await session.save();
     res.status(200).json({message: "Session deleted successfully"});
   } catch (error) {
