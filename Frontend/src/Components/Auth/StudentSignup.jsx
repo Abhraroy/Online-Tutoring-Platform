@@ -11,6 +11,7 @@ const StudentSignup = () => {
 
   useEffect(() => {
     if (!loading && user?.role === "student") {
+      console.log("StudentSignup user",user);
       navigate("/student-home");
     }
     if (error) {
@@ -30,7 +31,6 @@ const StudentSignup = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-
     email: '',
     password: '',
     confirmPassword: '',

@@ -7,6 +7,10 @@ const sessionSchema = new Schema({
     ref: "Tutor",
     required: true
   },
+  topic: {
+    type: String,
+    required: true
+  },
   subject: {
     type: String,
     required: true
@@ -21,9 +25,19 @@ const sessionSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "booked"],
-    default: "pending"
+    enum: ["open", "closed", "booked"],
+    default: "open"
   },
+
+  availableSlots: {
+    type: Number,
+    default: 1
+  },
+  grade: {
+    type: String,
+    required: true
+  },
+
   fee: {
     type: Number, // store fee at time of booking
     required: true

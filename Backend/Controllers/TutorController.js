@@ -131,13 +131,16 @@ export const createTutorSession = async (req, res) => { //healthy
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const { subject, date, duration, fee } = req.body;
+    const { subject, date, duration, fee, topic, grade, availableSlots } = req.body;
     const session = await SessionModel.create({
       tutorId,
       subject,
       date,
       duration,
       fee,
+      topic,
+      grade,
+      availableSlots
     });
     await session.save();
     if(!session){
