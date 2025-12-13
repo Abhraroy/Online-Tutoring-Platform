@@ -18,6 +18,17 @@ const StudentSchema = new Schema({
     grade:{
      type:String,
     },
+    subjects: [{
+        type: String
+    }],
+    phone: {
+        type: String,
+        required: true
+    },
+    agreeToTerms: {
+        type: Boolean,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now

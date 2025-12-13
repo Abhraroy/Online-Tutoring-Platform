@@ -13,8 +13,8 @@ export const registerStudent = async (req, res) => {
   console.log(req.body);
   //healthy
   try {
-    const { name, email, password, grade } = req.body;
-    if (!name || !email || !password || !grade) {
+    const { name, email, password, grade, subjects, phone, agreeToTerms } = req.body;
+    if (!name || !email || !password || !grade || !subjects || !phone || !agreeToTerms) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (!isValidEmail(email)) {
@@ -37,6 +37,9 @@ export const registerStudent = async (req, res) => {
       email,
       password: hashedPassword,
       grade,
+      subjects,
+      phone,
+      agreeToTerms: agreeToTerms === "true",
     });
     const sttoken = jwt.sign(
       { id: student._id, role: "student" },
@@ -161,64 +164,46 @@ export const bookSession = async (req, res) => {
 export const getSessions = async (req, res) => {
   //healthy
   try {
+    
     const role = req.role;
-    const { subject, date, status, grade } = req.query;
+    const { grade } = req.query;
     if (role !== "student") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
+    console.log("Received grade query param:", grade);
+    console.log("Grade type:", typeof grade);
+    console.log("Role:", role);
     let filter = {};
-    if (subject) filter.subject = subject;
-    if (date) filter.date = new Date(date); // ensure it's a Date
-    if (status) filter.status = status;
-    if (grade) filter.grade = grade;
+    if (grade) {
+      // Trim whitespace for exact match
+      const normalizedGrade = String(grade).trim();
+      filter.grade = normalizedGrade;
+      console.log("Filter with grade (normalized):", filter);
+    } else {
+      console.log("No grade provided, fetching all sessions");
+    }
     // Filter by available slots > 0 instead of just status === "pending"
     // This allows sessions with available slots to show even if some students have booked
     filter.availableSlots = { $gt: 0 };
-    filter.date = { $gte: new Date() };
+    
+    // Always filter to only show future sessions
+    const now = new Date();
+    filter.date = { $gte: now };
+    
     const sessions = await SessionModel.find(filter).populate(
       "tutorId",
       "name email subject grade availableSlots topic"
     );
-    
-    // Get booking counts for all sessions in a single aggregation query
-    const sessionIds = sessions.map(s => s._id);
-    const bookingCounts = await BookingModel.aggregate([
-      {
-        $match: {
-          sessionId: { $in: sessionIds },
-          status: "confirmed"
-        }
-      },
-      {
-        $group: {
-          _id: "$sessionId",
-          bookedCount: { $sum: 1 }
-        }
-      }
-    ]);
-    
-    // Create a map of sessionId -> bookedCount for quick lookup
-    const bookingMap = {};
-    bookingCounts.forEach(item => {
-      bookingMap[item._id.toString()] = item.bookedCount;
-    });
-    
-    // Map sessions to include capacity and tutorName for frontend compatibility
-    const mappedSessions = sessions.map(session => {
-      const sessionObj = session.toObject();
-      const bookedCount = bookingMap[session._id.toString()] || 0;
-      // Calculate total capacity: availableSlots + confirmed bookings
-      sessionObj.capacity = bookedCount + session.availableSlots;
-      sessionObj.tutorName = session.tutorId?.name || "Unknown";
-      return sessionObj;
-    });
-    
-    if (mappedSessions.length === 0) {
+    console.log("Found sessions:", sessions.length);
+    if (sessions.length > 0) {
+      console.log("Sample session grades in DB:", sessions.slice(0, 3).map(s => s.grade));
+    }
+    if (sessions.length === 0) {
       return res.status(404).json({ message: "No sessions found" });
     }
     res
       .status(200)
-      .json({ message: "Sessions fetched successfully", sessions: mappedSessions });
+      .json({ message: "Sessions fetched successfully", sessions });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -300,5 +285,22 @@ export const deleteBookedSession = async (req, res) => {
     res.status(200).json({message: "Session deleted successfully"});
   } catch (error) {
     res.status(500).json({message: error.message});
+  }
+}
+
+export const getStudentProfile = async (req, res) => {
+  try {
+    const studentId = req.userId;
+    const role = req.role;
+    if (role !== "student") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const student = await StudentModel.findById(studentId).select("-password");
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    res.status(200).json({ message: "Student profile fetched successfully", student });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 }

@@ -272,3 +272,20 @@ export const logoutTutor = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
+
+export const getTutorProfile = async (req, res) => {
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const tutor = await TutorModel.findById(tutorId).select("-password");
+    if (!tutor) {
+      return res.status(404).json({ message: "Tutor not found" });
+    }
+    res.status(200).json({ message: "Tutor profile fetched successfully", tutor });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
