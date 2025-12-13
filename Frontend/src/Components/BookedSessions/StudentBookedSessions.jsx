@@ -82,17 +82,17 @@ function StudentBookedSessions() {
   }
 
   return (
-    <div className=" bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 py-8 min-h-screen">
+      <div className="w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-8">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">My Booked Sessions</h1>
                 <p className="text-gray-600 text-lg">View and manage your upcoming and past tutoring sessions</p>
               </div>
-              <div className="hidden sm:flex items-center space-x-4">
+              <div className="flex items-center space-x-4">
                 <div className="bg-indigo-50 rounded-full px-4 py-2">
                   <span className="text-indigo-700 font-semibold">{bookedSessions.length} Sessions Booked</span>
                 </div>
@@ -103,20 +103,20 @@ function StudentBookedSessions() {
 
         {/* Sessions Grid */}
         {bookedSessions.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
-              <div className="mx-auto h-24 w-24 text-gray-400 mb-6">
+          <div className="text-center py-16">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 max-w-2xl mx-auto">
+              <div className="mx-auto h-32 w-32 text-gray-300 mb-6">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Booked Sessions</h3>
-              <p className="text-gray-500 mb-6">You haven't booked any tutoring sessions yet.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Booked Sessions</h3>
+              <p className="text-gray-600 mb-8 text-lg">You haven't booked any tutoring sessions yet. Start exploring available sessions from expert tutors.</p>
               <button
                 onClick={() => navigate('/student-home')}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Browse Sessions
@@ -124,81 +124,81 @@ function StudentBookedSessions() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {bookedSessions.map((session) => (
               <div 
                 key={session._id} 
-                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-200 group overflow-hidden"
+                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-300 transition-all duration-300 group overflow-hidden flex flex-col h-full"
               >
                 {/* Card Header */}
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b border-gray-100">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors">
+                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 border-b border-gray-100">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors mb-2 truncate">
                         {session.sessionId?.subject || 'Subject Not Specified'}
                       </h3>
                       <div className="flex items-center mt-1">
-                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
-                        <span className="text-sm font-medium text-gray-600">
+                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2 flex-shrink-0"></span>
+                        <span className="text-sm font-medium text-gray-600 truncate">
                           {session.sessionId?.tutorId?.name || 'Tutor Name'}
                         </span>
                       </div>
                     </div>
-                    <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border ${getStatusColor(session.status)}`}>
+                    <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border whitespace-nowrap ${getStatusColor(session.status)}`}>
                       {session.status || 'Unknown'}
                     </span>
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-5">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-5 flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Date & Time</p>
-                        <p className="text-sm text-gray-600">{formatDateTime(session.sessionId?.date)}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 mb-1">Date & Time</p>
+                        <p className="text-sm text-gray-600 break-words">{formatDateTime(session.sessionId?.date)}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Duration</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 mb-1">Duration</p>
                         <p className="text-sm text-gray-600">{session.sessionId?.duration || 'Not specified'} minutes</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                         </svg>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Session Fee</p>
-                        <p className="text-sm text-gray-600">${session.sessionId?.fee?.toFixed(2) || '0.00'}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 mb-1">Session Fee</p>
+                        <p className="text-lg font-bold text-indigo-600">${session.sessionId?.fee?.toFixed(2) || '0.00'}</p>
                       </div>
                     </div>
 
                     {session.notes && (
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex-shrink-0 w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Notes</p>
-                          <p className="text-sm text-gray-600">{session.notes}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 mb-1">Notes</p>
+                          <p className="text-sm text-gray-600 break-words">{session.notes}</p>
                         </div>
                       </div>
                     )}
@@ -206,10 +206,10 @@ function StudentBookedSessions() {
 
                   {/* Card Footer */}
                   <div className="mt-6 pt-4 border-t border-gray-100">
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <button
                         onClick={() => handleViewDetails(session.sessionId?._id)}
-                        className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                        className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -220,7 +220,7 @@ function StudentBookedSessions() {
                       <button
                         onClick={() => handleCancelSession(session._id)}
                         disabled={cancelling === session._id || session.status === 'completed' || session.status === 'cancelled'}
-                        className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
                       >
                         {cancelling === session._id ? (
                           <>
