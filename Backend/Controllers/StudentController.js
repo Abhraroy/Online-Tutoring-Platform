@@ -60,6 +60,35 @@ export const registerStudent = async (req, res) => {
   }
 };
 
+export const updateStudentProfile = async (req,res) =>{
+  try{
+    const studentId = req.userId;
+    const role = req.role;
+    if (role !== "student") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const { name, email, grade, subjects, phone, agreeToTerms } = req.body;
+    const student = await StudentModel.findByIdAndUpdate(studentId, { name, email, grade, subjects, phone, agreeToTerms });
+    if(!student){
+      return res.status(400).json({ message: "Student not found" });
+    }
+    res.status(201).json({ message: "Student profile updated successfully", student });
+  }catch(error){
+    res.status(500).json({message: error.message});
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 export const loginStudent = async (req, res) => {
   //healthy
   try {
@@ -295,7 +324,7 @@ export const getStudentProfile = async (req, res) => {
     if (role !== "student") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const student = await StudentModel.findById(studentId).select("-password");
+    const student = await StudentModel.findById(studentId).select("name email grade subjects phone agreeToTerms");
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }

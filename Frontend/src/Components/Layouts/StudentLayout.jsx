@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useZustandStore from '../Context/ZustandStore';
 
 const StudentLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,10 +9,14 @@ const StudentLayout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const profileRef = useRef(null);
+  const { setLogin, setUser, setUserData } = useZustandStore();
 
   const handleLogout = async () => {
     const response = await axios.post('/student/logout');
     if(response.status === 200){
+      setLogin(false);
+      setUser(null);
+      setUserData(null);
       navigate('/');
     }
   }
@@ -149,7 +154,7 @@ const StudentLayout = () => {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 py-2 transform transition-all duration-200 ease-out opacity-100 translate-y-0">
                   <Link
-                    to="/profile"
+                    to="/student/profile"
                     onClick={() => setIsProfileOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                   >

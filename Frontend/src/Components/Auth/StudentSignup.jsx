@@ -29,8 +29,7 @@ const StudentSignup = () => {
 
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -49,8 +48,10 @@ const StudentSignup = () => {
   ];
 
   const grades = [
-    'Elementary (K-5)', 'Middle School (6-8)', 'High School (9-12)',
-    'College/University', 'Adult Learning'
+    'Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5',
+    'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12',
+    'College Freshman', 'College Sophomore', 'College Junior', 'College Senior',
+    'Graduate', 'Adult'
   ];
 
   const handleChange = (e) => {
@@ -73,8 +74,7 @@ const StudentSignup = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
     if (!formData.password) newErrors.password = 'Password is required';
@@ -94,7 +94,7 @@ const StudentSignup = () => {
       try {
         console.log(formData);
         const payload = {
-          name: formData.firstName + " " + formData.lastName,
+          name: formData.name.trim(),
           email: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
@@ -147,42 +147,23 @@ const StudentSignup = () => {
                 Personal Information
               </h3>
               <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-semibold text-gray-700 ml-1">
-                    First Name
+                <div className="sm:col-span-2">
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 ml-1">
+                    Full Name *
                   </label>
                   <div className="mt-1">
                     <input
-                      id="firstName"
-                      name="firstName"
+                      id="name"
+                      name="name"
                       type="text"
-                      autoComplete="given-name"
-                      value={formData.firstName}
+                      autoComplete="name"
+                      value={formData.name}
                       onChange={handleChange}
-                      className={`appearance-none block w-full px-4 py-3 border ${errors.firstName ? 'border-red-300 ring-2 ring-red-200' : 'border-gray-200 focus:ring-indigo-500 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5`}
-                      placeholder="Jane"
+                      className={`appearance-none block w-full px-4 py-3 border ${errors.name ? 'border-red-300 ring-2 ring-red-200' : 'border-gray-200 focus:ring-indigo-500 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5`}
+                      placeholder="John Doe"
                     />
                   </div>
-                  {errors.firstName && <p className="mt-1 text-sm text-red-500 font-medium pl-1 animate-pulse">{errors.firstName}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-semibold text-gray-700 ml-1">
-                    Last Name
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="lastName"
-                      name="lastName"
-                      type="text"
-                      autoComplete="family-name"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className={`appearance-none block w-full px-4 py-3 border ${errors.lastName ? 'border-red-300 ring-2 ring-red-200' : 'border-gray-200 focus:ring-indigo-500 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5`}
-                      placeholder="Doe"
-                    />
-                  </div>
-                  {errors.lastName && <p className="mt-1 text-sm text-red-500 font-medium pl-1 animate-pulse">{errors.lastName}</p>}
+                  {errors.name && <p className="mt-1 text-sm text-red-500 font-medium pl-1 animate-pulse">{errors.name}</p>}
                 </div>
 
                 <div className="sm:col-span-2">

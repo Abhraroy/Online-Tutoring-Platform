@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useZustandStore from '../Context/ZustandStore';
 
 const TutorLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { setLogin, setUser, setUserData } = useZustandStore();
   const handleLogout = async () => {
     try{const response = await axios.post('/tutor/logout');
     if(response.status === 200){
       console.log("Tutor logged out successfully");
+      setLogin(false);
+      setUser(null);
+      setUserData(null);
       navigate("/");
     }else{
       console.log("Tutor logged out failed",response.data.message);
@@ -60,7 +65,7 @@ const TutorLayout = () => {
             {/* Right: Actions */}
             <div className="hidden md:flex items-center gap-6">
               <Link
-                to="/profile"
+                to="/tutor/profile"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
                 Profile
@@ -93,7 +98,7 @@ const TutorLayout = () => {
               <NavLink to="/tutor/booked-sessions" className={({ isActive }) => `block rounded-md px-3 py-2 text-base font-medium ${isActive ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>Booked Sessions</NavLink>
               <NavLink to="/history" className={({ isActive }) => `block rounded-md px-3 py-2 text-base font-medium ${isActive ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>History</NavLink>
               <div className="flex items-center gap-3 px-3 pt-2">
-                <Link to="/profile" onClick={() => setIsOpen(false)} className="text-base font-medium text-gray-700">Profile</Link>
+                <Link to="/tutor/profile" onClick={() => setIsOpen(false)} className="text-base font-medium text-gray-700">Profile</Link>
                 <span className="text-base font-medium text-gray-700 cursor-pointer">Logout</span>
               </div>
             </nav>

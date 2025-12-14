@@ -6,16 +6,24 @@ const AuthContext = createContext();
 
 
 export const AuthProvider = ({children}) => {
-    const {login,setLogin} = useZustandStore();
-    const [user,setUser] = useState(null);
-    const [userData,setUserData] = useState(null);
+    const {login, setLogin, user, setUser, userData, setUserData} = useZustandStore();
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState(null);
 
     useEffect(() => {
-        console.log("AuthProvider mounted");
+        console.log("AuthProvider mounted, login:", login);
         setLoading(true);
         setError(null);
+        
+        // If login is false, clear user state immediately
+        if (!login) {
+            console.log("Login is false, clearing user state");
+            setUser(null);
+            setUserData(null);
+            setLoading(false);
+            return;
+        }
+
         const fetchUser = async () => {
             try {
                 // First, get the decoded token with role and id
@@ -54,7 +62,7 @@ export const AuthProvider = ({children}) => {
             }
         };
         fetchUser();
-    }, [login]);
+    }, [login, setUser, setUserData]);
     return (
         <AuthContext.Provider value={{user, userData, loading, error}}>
             {children}
