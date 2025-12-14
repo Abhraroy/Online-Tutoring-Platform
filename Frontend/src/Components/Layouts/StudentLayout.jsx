@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useZustandStore from '../Context/ZustandStore';
 
 const StudentLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,10 +9,14 @@ const StudentLayout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const profileRef = useRef(null);
+  const { setLogin, setUser, setUserData } = useZustandStore();
 
   const handleLogout = async () => {
     const response = await axios.post('/student/logout');
     if(response.status === 200){
+      setLogin(false);
+      setUser(null);
+      setUserData(null);
       navigate('/');
     }
   }

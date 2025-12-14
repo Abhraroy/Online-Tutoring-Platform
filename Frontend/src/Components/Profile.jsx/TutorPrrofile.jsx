@@ -7,13 +7,15 @@ import useZustandStore from '../Context/ZustandStore';
 function TutorProfile() {
   const navigate = useNavigate();
   const { userData } = useAuth();
-  const { setLogin } = useZustandStore();
+  const { setLogin, setUser, setUserData } = useZustandStore();
     console.log("TutorProfile userData", userData);
   const handleLogout = async () => {
     try {
       const response = await axios.post('/tutor/logout');
       if (response.status === 200) {
         setLogin(false);
+        setUser(null);
+        setUserData(null);
         navigate('/');
       }
     } catch (error) {

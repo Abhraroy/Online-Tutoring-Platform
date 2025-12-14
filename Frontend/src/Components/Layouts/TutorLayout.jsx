@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useZustandStore from '../Context/ZustandStore';
 
 const TutorLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { setLogin, setUser, setUserData } = useZustandStore();
   const handleLogout = async () => {
     try{const response = await axios.post('/tutor/logout');
     if(response.status === 200){
       console.log("Tutor logged out successfully");
+      setLogin(false);
+      setUser(null);
+      setUserData(null);
       navigate("/");
     }else{
       console.log("Tutor logged out failed",response.data.message);
