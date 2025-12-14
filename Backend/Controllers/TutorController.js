@@ -15,7 +15,6 @@ export const registerTutor = async (req, res) => { //healthy
       name, 
       email, 
       password, 
-      subject, 
       subjects,
       hourlyRate, 
       lowerGrade, 
@@ -28,9 +27,13 @@ export const registerTutor = async (req, res) => { //healthy
       certifications,
       languages
     } = req.body;
-    
-    if (!name || !email || !password || !subject || !hourlyRate || !lowerGrade || !upperGrade) {
+
+    console.log("Tutor signup data", req.body);
+    if (!name || !email || !password || !hourlyRate || !lowerGrade || !upperGrade) {
       return res.status(400).json({ message: "All required fields are missing" });
+    }
+    if (!subjects || subjects.length === 0) {
+      return res.status(400).json({ message: "At least one subject is required" });
     }
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: "Invalid email" });
@@ -52,7 +55,6 @@ export const registerTutor = async (req, res) => { //healthy
       email,
       password: hashedPassword,
       phone: phone || '',
-      subject,
       subjects: subjects || [],
       hourlyRate,
       lowerGrade,
@@ -120,9 +122,23 @@ export const loginTutor = async (req, res) => {
   }
 };
 
-
-
-
+export const updateTutorProfile = async (req, res) => {
+  try{
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const { name, email, phone, subjects, hourlyRate, lowerGrade, upperGrade, experience, education, bio, availability, certifications, languages } = req.body;
+    const tutor = await TutorModel.findByIdAndUpdate(tutorId, { name, email, phone, subjects, hourlyRate, lowerGrade, upperGrade, experience, education, bio, availability, certifications, languages });
+    if(!tutor){
+      return res.status(400).json({ message: "Tutor not found" });
+    }
+    res.status(201).json({ message: "Tutor profile updated successfully", tutor });
+  }catch(error){
+    res.status(500).json({message: error.message});
+  }
+};
 
 export const createTutorSession = async (req, res) => { //healthy
   try {
@@ -131,7 +147,7 @@ export const createTutorSession = async (req, res) => { //healthy
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const { subject, date, duration, fee, topic, grade, availableSlots } = req.body;
+    const { subject, date, duration, fee, topic, grade, availableSlots, status } = req.body;
     const session = await SessionModel.create({
       tutorId,
       subject,
@@ -140,13 +156,43 @@ export const createTutorSession = async (req, res) => { //healthy
       fee,
       topic,
       grade,
-      availableSlots
+      availableSlots,
+      status: status || "open"
     });
     await session.save();
     if(!session){
       return res.status(400).json({ message: "Session not created" });
     }
     res.status(201).json({ message: "Session created successfully", session });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateTutorSession = async (req, res) => { //healthy
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const { sessionId, subject, date, duration, fee, topic, grade, availableSlots, status } = req.body;
+    const session = await SessionModel.findByIdAndUpdate(sessionId, {
+      tutorId,
+      subject,
+      date,
+      duration,
+      fee,
+      topic,
+      grade,
+      availableSlots,
+      status: status || "open"
+    });
+    await session.save();
+    if(!session){
+      return res.status(400).json({ message: "Session not updated" });
+    }
+    res.status(200).json({ message: "Session updated successfully", session });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -179,7 +225,7 @@ export const getBookedTutorSessions = async (req, res) => {
     if(role !== "tutor"){
       return res.status(403).json({message: "Forbidden: Access denied"});
     }
-    const bookedSessions = await BookingModel.find({tutorId, status: "confirmed"}).populate("studentId", "name email").populate("sessionId", "subject date duration capacity fee");
+    const bookedSessions = await BookingModel.find({tutorId, status: "confirmed"}).populate("studentId", "name email phone").populate("sessionId", "subject topic date duration capacity fee");
     if(bookedSessions.length === 0){
       return res.status(404).json({message: "No sessions found"});
     }
@@ -233,13 +279,6 @@ export const deleteBookedTutorSession = async (req, res) => {
     if(!student){
       return res.status(404).json({message: "Student not found"});
     }
-    
-
-
-
-
-
-    
     await bookingSession.deleteOne();
     await session.deleteOne();
     res.status(200).json({message: "Booking session deleted successfully"});

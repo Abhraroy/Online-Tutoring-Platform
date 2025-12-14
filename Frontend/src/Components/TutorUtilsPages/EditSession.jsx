@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-function CreateSession() {
+function EditSession() {
   const navigate = useNavigate();
+  const { sessionId } = useParams();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     subject: '',
     topic: '',
@@ -18,6 +20,7 @@ function CreateSession() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const subjects = [
     'Mathematics', 'Science', 'English', 'History', 'Geography',
@@ -46,6 +49,53 @@ function CreateSession() {
     { value: 'closed', label: 'Closed', description: 'Session is closed and not accepting bookings' },
   ];
 
+  // Fetch session data on component mount
+  useEffect(() => {
+    const fetchSessionData = async () => {
+      try {
+        setLoading(true);
+        let sessionData = null;
+
+        // First try to get from location state (if navigated from TutorSessionDetail)
+        if (location.state?.sessionData) {
+          sessionData = location.state.sessionData;
+        } else if (sessionId) {
+          // Otherwise fetch from API using sessionId from URL
+          const response = await axios.get('/tutor/sessions');
+          const sessions = response.data.sessions || [];
+          sessionData = sessions.find(s => s._id === sessionId);
+        }
+
+        if (sessionData) {
+          // Extract date and time from session date
+          const sessionDate = new Date(sessionData.date);
+          const dateStr = sessionDate.toISOString().split('T')[0];
+          const timeStr = sessionDate.toTimeString().slice(0, 5); // HH:MM format
+
+          setFormData({
+            subject: sessionData.subject || '',
+            topic: sessionData.topic || '',
+            grade: sessionData.grade || '',
+            date: dateStr,
+            time: timeStr,
+            duration: sessionData.duration || 60,
+            availableSlots: sessionData.availableSlots || 1,
+            fee: sessionData.fee?.toString() || '',
+            status: sessionData.status || 'open'
+          });
+        } else {
+          setErrors({ submit: 'Session not found. Please go back and try again.' });
+        }
+      } catch (error) {
+        console.error('Error fetching session data:', error);
+        setErrors({ submit: 'Failed to load session data. Please try again.' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSessionData();
+  }, [sessionId, location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,9 +127,6 @@ function CreateSession() {
       if (selectedDate < today) {
         newErrors.date = 'Session date cannot be in the past';
       }
-      else if(selectedDate === today){
-        newErrors.date = 'Session date must not be today but can be in the future';
-      }
     }
     if (!formData.time) newErrors.time = 'Please select a time';
     if (!formData.duration) newErrors.duration = 'Please select session duration';
@@ -105,7 +152,15 @@ function CreateSession() {
         // Combine date and time
         const sessionDateTime = new Date(`${formData.date}T${formData.time}`);
         
+        // Use sessionId from URL params or location state
+        const currentSessionId = sessionId || location.state?.sessionData?._id;
+        
+        if (!currentSessionId) {
+          throw new Error('Session ID is missing');
+        }
+
         const payload = {
+          sessionId: currentSessionId,
           subject: formData.subject,
           topic: formData.topic.trim(),
           grade: formData.grade,
@@ -116,27 +171,38 @@ function CreateSession() {
           status: formData.status || 'open'
         };
 
-        const response = await axios.post('/tutor/create-session', payload);
-        console.log('Session created successfully:', response.data);
+        const response = await axios.put(`/tutor/sessions/${currentSessionId}`, payload);
+        console.log('Session updated successfully:', response.data);
         
-        // Redirect to tutor home after successful creation
-        navigate('/tutor-home');
+        // Redirect to session detail page after successful update
+        navigate(`/tutor/session-detail/${currentSessionId}`);
       } catch (error) {
-        console.error('Error creating session:', error.response?.data || error.message);
-        setErrors({ submit: 'Failed to create session. Please try again.' });
+        console.error('Error updating session:', error.response?.data || error.message);
+        setErrors({ submit: error.response?.data?.message || 'Failed to update session. Please try again.' });
       } finally {
         setIsSubmitting(false);
       }
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading session data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className=" bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
+    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Session</h1>
-          <p className="text-gray-600">Set up a new tutoring session for your students</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Session</h1>
+          <p className="text-gray-600">Update your tutoring session details</p>
         </div>
 
         {/* Form */}
@@ -357,7 +423,7 @@ function CreateSession() {
                 disabled={isSubmitting}
                 className="w-full sm:w-auto px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
               >
-                {isSubmitting ? 'Creating Session...' : 'Create Session'}
+                {isSubmitting ? 'Updating Session...' : 'Update Session'}
               </button>
             </div>
           </form>
@@ -367,4 +433,5 @@ function CreateSession() {
   );
 }
 
-export default CreateSession;
+export default EditSession;
+

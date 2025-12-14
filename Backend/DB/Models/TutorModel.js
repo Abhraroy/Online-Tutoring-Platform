@@ -19,10 +19,6 @@ const TutorSchema = new Schema({
         type: String,
         required: false
     },
-    subject: {
-        type: String,
-        required: true
-    },
     subjects: [{
         type: String
     }],

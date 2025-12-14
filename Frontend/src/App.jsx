@@ -10,12 +10,17 @@ import StudentLayout from './Components/Layouts/StudentLayout'
 import TutorLayout from './Components/Layouts/TutorLayout'
 import TutorHome from './Components/HomePage/TutorHome'
 import CreateSession from './Components/TutorUtilsPages/CreateSession'
+import EditSession from './Components/TutorUtilsPages/EditSession'
 import TutorBookedSessions from './Components/BookedSessions/TutorBookedSessions'
 import StudentLogin from './Components/Auth/StudentLogin'
 import TutorLogin from './Components/Auth/TutorLogin'
 import SessionDetail from './Components/StudentUtilsPage.jsx/SessionDetail'
 import StudentBookedSessions from './Components/BookedSessions/StudentBookedSessions'
-
+import TutorSessionDetail from './Components/TutorUtilsPages/TutorSessionDetail'
+import StudentProfile from './Components/Profile.jsx/StudentProfile'
+import TutorProfile from './Components/Profile.jsx/TutorPrrofile'
+import StudentEditProfile from './Components/Profile.jsx/StudentEditProfile'
+import TutorEditProfile from './Components/Profile.jsx/TutorEditProfile'
 function App() {
   return (
     <Router>
@@ -46,6 +51,16 @@ function App() {
                 <StudentBookedSessions />
               </ProtectedRoute>
             } />
+            <Route path="/student/profile" element={
+              <ProtectedRoute role="student">
+                <StudentProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/edit-profile" element={
+              <ProtectedRoute role="student">
+                <StudentEditProfile />
+              </ProtectedRoute>
+            } />
        </Route>
         
         {/* tutorRoutes */}
@@ -60,9 +75,29 @@ function App() {
                 <CreateSession />
               </ProtectedRoute>
             } />
+            <Route path="/tutor/edit-session/:sessionId" element={
+              <ProtectedRoute role="tutor">
+                <EditSession />
+              </ProtectedRoute>
+            } />
             <Route path="/tutor/booked-sessions" element={
               <ProtectedRoute role="tutor">
                 <TutorBookedSessions />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutor/session-detail/:sessionId" element={
+              <ProtectedRoute role="tutor">
+                <TutorSessionDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutor/profile" element={
+              <ProtectedRoute role="tutor">
+                <TutorProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutor/edit-profile" element={
+              <ProtectedRoute role="tutor">
+                <TutorEditProfile />
               </ProtectedRoute>
             } />
         </Route>

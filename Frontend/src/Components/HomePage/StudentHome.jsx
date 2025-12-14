@@ -234,6 +234,16 @@ function StudentHome() {
     })
   }
 
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      open: { bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-300' },
+      closed: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-300' },
+      booked: { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300' }
+    }
+    const config = statusConfig[status?.toLowerCase()] || statusConfig.open
+    return `${config.bg} ${config.text} ${config.border}`
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -248,24 +258,7 @@ function StudentHome() {
     )
   }
 
-  // Empty state
-  // if (sessions.length === 0) {
-  //   return (
-  //     <div className="bg-gray-50 py-8">
-  //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  //         <div className="text-center py-12">
-  //           <div className="mx-auto h-24 w-24 text-gray-400 mb-6">
-  //             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-  //               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-  //             </svg>
-  //           </div>
-  //           <h3 className="text-lg font-medium text-gray-900 mb-2">No sessions available</h3>
-  //           <p className="text-gray-500">Check back later for new tutoring sessions.</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+ 
 
   return (
     <div className="bg-gray-50">
@@ -485,21 +478,40 @@ function StudentHome() {
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b border-gray-100">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors">
-                      {s.subject}
-                    </h3>
+                    {s.topic ? (
+                      <>
+                        <h3 className="text-xl font-extrabold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors mb-1">
+                          {s.topic}
+                        </h3>
+                        <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2">
+                          {s.subject}
+                        </p>
+                      </>
+                    ) : (
+                      <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors">
+                        {s.subject}
+                      </h3>
+                    )}
                     <div className="flex items-center mt-1">
                       <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
                       <span className="text-sm font-medium text-gray-600">{s.tutorName}</span>
                     </div>
                   </div>
-                  <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                    s.capacity === 1 
-                      ? 'bg-emerald-100 text-emerald-700' 
-                      : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {s.capacity === 1 ? '1:1' : `${s.capacity} seats`}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    {s.status && (
+                      <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border ${getStatusBadge(s.status)}`}>
+                        <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-current"></span>
+                        {s.status?.charAt(0).toUpperCase() + s.status?.slice(1)}
+                      </span>
+                    )}
+                    <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                      s.availableSlots === 1 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {s.availableSlots} seats available
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -799,21 +811,40 @@ function StudentHome() {
                   <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b border-gray-100">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors">
-                          {s.subject}
-                        </h3>
+                        {s.topic ? (
+                          <>
+                            <h3 className="text-xl font-extrabold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors mb-1">
+                              {s.topic}
+                            </h3>
+                            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2">
+                              {s.subject}
+                            </p>
+                          </>
+                        ) : (
+                          <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors">
+                            {s.subject}
+                          </h3>
+                        )}
                         <div className="flex items-center mt-1">
                           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
                           <span className="text-sm font-medium text-gray-600">{s.tutorName}</span>
                         </div>
                       </div>
-                      <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                        s.capacity === 1 
-                          ? 'bg-emerald-100 text-emerald-700' 
-                          : 'bg-blue-100 text-blue-700'
-                      }`}>
-                        {s.capacity === 1 ? '1:1' : `${s.capacity} seats`}
-                      </span>
+                      <div className="flex flex-col items-end gap-2">
+                        {s.status && (
+                          <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border ${getStatusBadge(s.status)}`}>
+                            <span className="w-1.5 h-1.5 rounded-full mr-1.5 bg-current"></span>
+                            {s.status?.charAt(0).toUpperCase() + s.status?.slice(1)}
+                          </span>
+                        )}
+                        <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                          s.availableSlots === 1 
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {s.availableSlots} seats available
+                        </span>
+                      </div>
                     </div>
                   </div>
 

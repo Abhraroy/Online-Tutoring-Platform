@@ -39,7 +39,7 @@ function StudentBookedSessions() {
   }
 
   const handleViewDetails = (sessionId) => {
-    navigate(`/session-detail/${sessionId}`)
+    navigate(`/session-detail/${sessionId}`, { state: { showBookButton: false } })
   }
 
   const formatDateTime = (dateString) => {
