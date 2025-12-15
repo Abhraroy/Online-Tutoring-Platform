@@ -4,13 +4,11 @@ import axios from 'axios';
 const HiredSession = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchHiredStudents = async () => {
       try {
         setLoading(true);
-        setError(null);
         const response = await axios.get('/tutor/hired-by-students');
         if (response.status === 200) {
           const raw = response.data.hiredStudents || [];
@@ -22,10 +20,8 @@ const HiredSession = () => {
       } catch (err) {
         if (err.response && err.response.status === 404) {
           setStudents([]);
-          setError(null);
         } else {
           console.error('Error fetching hired students:', err);
-          setError('Failed to load hired students. Please try again.');
         }
       } finally {
         setLoading(false);
@@ -41,22 +37,6 @@ const HiredSession = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading hired students...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full bg-gray-50 flex items-center justify-center py-32 min-h-screen">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors active:scale-95"
-          >
-            Retry
-          </button>
         </div>
       </div>
     );
