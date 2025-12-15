@@ -25,23 +25,53 @@ function FindTutor() {
     fetchTutors();
   }, []);
 
-  const handleFollow = (tutorId) => {
-    setFollowedTutors(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(tutorId)) {
-        newSet.delete(tutorId);
+  const handleFollow = async (tutorId) => {
+    try {
+      const response = await axios.post(`/student/follow/${tutorId}`);
+      if (response.status === 200) {
+        setFollowedTutors(prev => {
+          const newSet = new Set(prev);
+          newSet.add(tutorId);
+          return newSet;
+        });
       } else {
-        newSet.add(tutorId);
+        alert(`Failed to follow tutor ${tutor.name}`);
       }
-      return newSet;
-    });
+    } catch (error) {
+      console.error('Error following tutor:', error);
+      alert(`Failed to follow tutor ${tutor.name}`);
+    }
   };
 
-  const handleHire = (tutor) => {
+  const handleUnfollow = async (tutorId) => {
+    try {
+      const response = await axios.post(`/student/unfollow/${tutorId}`);
+      if (response.status === 200) {
+        alert(`Tutor ${tutor.name} unfollowed successfully`);
+      } else {
+        alert(`Failed to unfollow tutor ${tutor.name}`);
+      }
+    } catch (error) {
+      console.error('Error unfollowing tutor:', error);
+      alert(`Failed to unfollow tutor ${tutor.name}`);
+    }
+  };
+
+  const handleHire = async (tutor) => {
     // Navigate to tutor's sessions or create a booking
     console.log('Hire tutor:', tutor);
     // You can add navigation logic here
-    alert(`Hiring ${tutor.name}. This feature will be implemented soon!`);
+    try {
+      const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id });
+      if (response.status === 200) {
+        alert(`Tutor ${tutor.name} hired successfully`);
+      } else {
+        alert(`Failed to hire tutor ${tutor.name}`);
+      }
+    } catch (error) {
+      console.error('Error hiring tutor:', error);
+      alert(`Failed to hire tutor ${tutor.name}`);
+    }
   };
 
   if (loading) {

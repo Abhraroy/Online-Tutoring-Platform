@@ -22,6 +22,10 @@ import TutorProfile from './Components/Profile.jsx/TutorPrrofile'
 import StudentEditProfile from './Components/Profile.jsx/StudentEditProfile'
 import TutorEditProfile from './Components/Profile.jsx/TutorEditProfile'
 import FindTutor from './Components/StudentUtilsPage.jsx/FindTutor'
+import FollowedTutor from './Components/StudentUtilsPage.jsx/FollowedTutor'
+import PastSession from './Components/StudentUtilsPage.jsx/PastSession'
+import HiredSession from './Components/TutorUtilsPages/HiredSession'
+import HistorySession from './Components/TutorUtilsPages/HistorySession'
 function App() {
   return (
     <Router>
@@ -67,6 +71,16 @@ function App() {
                 <FindTutor />
               </ProtectedRoute>
             } />
+            <Route path="/past-sessions" element={
+              <ProtectedRoute role="student">
+                <PastSession />
+              </ProtectedRoute>
+            } />
+            <Route path="/followed-tutors" element={
+              <ProtectedRoute role="student">
+                <FollowedTutor />
+              </ProtectedRoute>
+            } />
        </Route>
         
         {/* tutorRoutes */}
@@ -104,6 +118,16 @@ function App() {
             <Route path="/tutor/edit-profile" element={
               <ProtectedRoute role="tutor">
                 <TutorEditProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutor/past-sessions" element={
+              <ProtectedRoute role="tutor">
+                <HistorySession />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutor/hired-by-students" element={
+              <ProtectedRoute role="tutor">
+                <HiredSession />
               </ProtectedRoute>
             } />
         </Route>

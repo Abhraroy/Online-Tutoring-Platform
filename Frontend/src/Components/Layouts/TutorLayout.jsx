@@ -55,7 +55,13 @@ const TutorLayout = () => {
                 Booked Sessions
               </NavLink>
               <NavLink
-                to="/history"
+                to="/tutor/hired-by-students"
+                className={({ isActive }) => `text-sm font-medium ${isActive ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                Hired Sessions
+              </NavLink>
+              <NavLink
+                to="/tutor/past-sessions"
                 className={({ isActive }) => `text-sm font-medium ${isActive ? 'text-indigo-600' : 'text-gray-600 hover:text-gray-900'}`}
               >
                 History

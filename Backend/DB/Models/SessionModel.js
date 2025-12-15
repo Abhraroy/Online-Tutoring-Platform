@@ -25,7 +25,7 @@ const sessionSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["open", "closed", "booked"],
+    enum: ["open", "closed", "booked", "completed"],
     default: "open"
   },
 
