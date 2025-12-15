@@ -27,6 +27,12 @@ import PastSession from './Components/StudentUtilsPage.jsx/PastSession'
 import HiredSession from './Components/TutorUtilsPages/HiredSession'
 import SearchResultPage from './Components/StudentUtilsPage.jsx/SearchResultPage'
 import HistorySession from './Components/TutorUtilsPages/HistorySession'
+import About from './Components/FooterPages/About'
+import Contact from './Components/FooterPages/Contact'
+import Privacy from './Components/FooterPages/Privacy'
+import Terms from './Components/FooterPages/Terms'
+import HelpCenter from './Components/FooterPages/HelpCenter'
+import Support from './Components/FooterPages/Support'
 function App() {
   return (
     <Router>
@@ -36,7 +42,13 @@ function App() {
         <Route path="/tutor-login" element={<TutorLogin />} />
         <Route path="/student-signup" element={<StudentSignup />} />
         <Route path="/tutor-signup" element={<TutorSignup />} />
-        
+
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/help-center" element={<HelpCenter />} />
+        <Route path="/support" element={<Support />} />
 
          { /* studentRoutes */ }
         

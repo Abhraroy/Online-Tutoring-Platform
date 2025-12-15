@@ -11,6 +11,11 @@ import BookingModel from "../DB/Models/BookingModel.js";
 import HiringModel from "../DB/Models/HiringModel.js";
 import FollowModel from "../DB/Models/FollowModel.js";
 import emailTransporter from "../Utils/EmailService.js";
+
+const isProduction = process.env.NODE_ENV === "production";
+console.log("isProduction", isProduction);
+const sameSite = isProduction ? "none" : "lax";
+console.log("sameSite", sameSite);
 export const registerStudent = async (req, res) => {
   console.log(req.body);
   //healthy
@@ -51,8 +56,8 @@ export const registerStudent = async (req, res) => {
 
     res.cookie("token", sttoken, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+      sameSite: sameSite,
+      secure: isProduction,
       maxAge: 72 * 60 * 60 * 1000,
     });
 
@@ -126,7 +131,8 @@ export const loginStudent = async (req, res) => {
     );
     res.cookie("token", sttoken, {
       httpOnly: true,
-      secure: false,
+      sameSite: sameSite,
+      secure: isProduction,
       maxAge: 72 * 60 * 60 * 1000,
     });
     res.status(201).json({
@@ -281,8 +287,8 @@ export const logoutStudent = async (req, res) => {
   try {
     res.clearCookie("token",{
       httpOnly: true,
-      secure: false,
-      maxAge: 0
+      secure: isProduction,
+      sameSite: sameSite,
     })
     res.status(200).json({message: "Student logged out successfully"});
   } catch (error) {

@@ -117,7 +117,7 @@ const PastSession = () => {
             <p className="text-gray-600">You have not booked any sessions yet.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
             {sessions.map((item) => {
               const session = item.sessionId || {};
               const tutor = item.tutorId || {};
@@ -125,7 +125,7 @@ const PastSession = () => {
               return (
                 <div
                   key={item._id}
-                  className="w-full bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="w-full bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 min-w-[300px] sm:min-w-[360px] lg:min-w-[420px] snap-start"
                 >
                   <div className="flex flex-col lg:flex-row gap-4 p-5 lg:p-6">
                     <div className="flex-1">

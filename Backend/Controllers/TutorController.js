@@ -8,7 +8,12 @@ import SessionModel from "../DB/Models/SessionModel.js";
 import isValidEmail from "../Utils/EmailTest.js";
 import isValidPassword from "../Utils/PassWordTest.js";
 import BookingModel from "../DB/Models/BookingModel.js";
+import HiringModel from "../DB/Models/HiringModel.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const sameSite = isProduction ? "none" : "lax";
+console.log("isProduction", isProduction);
+console.log("sameSite", sameSite);
 export const registerTutor = async (req, res) => { //healthy
   try {
     const { 
@@ -71,7 +76,7 @@ export const registerTutor = async (req, res) => { //healthy
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: false, maxAge: 72 * 60 * 60 * 1000 });
+    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
     res
       .status(201)
       .json({ message: "Tutor created successfully", tutor });
@@ -112,7 +117,7 @@ export const loginTutor = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: false, maxAge: 72 * 60 * 60 * 1000 });
+    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
     res.status(201).json({
       message: "Tutor logged in successfully",
       existingTutor,
@@ -303,8 +308,8 @@ export const logoutTutor = async (req, res) => {
   try {
     res.clearCookie("token",{
       httpOnly: true,
-      secure: false,
-      maxAge: 0
+      secure: isProduction,
+      sameSite: sameSite,
     })
     res.status(200).json({message: "Tutor logged out successfully"});
   } catch (error) {

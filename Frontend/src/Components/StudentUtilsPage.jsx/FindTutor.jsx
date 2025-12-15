@@ -140,11 +140,11 @@ function FindTutor() {
             <p className="text-gray-600">There are currently no tutors available.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
             {tutors.map((tutor) => (
               <div
                 key={tutor._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] snap-start"
               >
                 {/* Tutor Header */}
                 <div className="mb-4">

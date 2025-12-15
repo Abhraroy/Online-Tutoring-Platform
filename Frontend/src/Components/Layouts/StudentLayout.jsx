@@ -42,7 +42,7 @@ const StudentLayout = () => {
   }
 
   return (
-    <div className="h-[100vh] bg-gray-50 text-gray-800 overflow-x-hidden">
+    <div className="min-h-[100vh] bg-gray-50 text-gray-800 overflow-x-hidden flex flex-col">
       {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -160,86 +160,79 @@ const StudentLayout = () => {
               </NavLink>
             </div>
 
-            {/* Right: Profile Dropdown */}
-            <div className="relative flex-shrink-0" ref={profileRef}>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group"
-              >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            {/* Right: Profile + Mobile Menu */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Profile Dropdown */}
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-300 group"
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span className="hidden sm:inline text-sm font-medium text-gray-700">Profile</span>
+                  <svg 
+                    className={`hidden sm:block h-4 w-4 text-gray-500 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
-                </div>
-                <span className="hidden sm:inline text-sm font-medium text-gray-700">Profile</span>
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 py-2 transform transition-all duration-200 ease-out opacity-100 translate-y-0 z-50">
+                    <Link
+                      to="/student/profile"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>View Profile</span>
+                    </Link>
+                    <div className="border-t border-gray-200 my-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                    >
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile: Hamburger */}
+              <button
+                type="button"
+                className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 transition-colors duration-300"
+                onClick={() => setIsOpen((v) => !v)}
+                aria-label="Toggle navigation"
+                aria-expanded={isOpen}
+              >
                 <svg 
-                  className={`h-4 w-4 text-gray-500 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} 
+                  className={`h-6 w-6 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} 
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  {isOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  )}
                 </svg>
               </button>
-
-              {/* Profile Dropdown Menu */}
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-200 py-2 transform transition-all duration-200 ease-out opacity-100 translate-y-0">
-                  <Link
-                    to="/student/profile"
-                    onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>View Profile</span>
-                  </Link>
-                  <Link
-                    to="/messages"
-                    onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    <span>Messages</span>
-                  </Link>
-                  <div className="border-t border-gray-200 my-1"></div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
-                  >
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
             </div>
-
-            {/* Mobile: Hamburger */}
-            <button
-              type="button"
-              className="md:hidden lg:hidden inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 transition-colors duration-300"
-              onClick={() => setIsOpen((v) => !v)}
-              aria-label="Toggle navigation"
-              aria-expanded={isOpen}
-            >
-              <svg 
-                className={`h-6 w-6 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -330,31 +323,39 @@ const StudentLayout = () => {
                 </svg>
                 <span>Followed Tutors</span>
               </NavLink>
-              <NavLink 
-                to="/messages" 
-                className={({ isActive }) => 
-                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-indigo-50 text-indigo-700' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`
-                } 
-                onClick={() => setIsOpen(false)}
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span>Messages</span>
-              </NavLink>
             </nav>
           </div>
         </div>
       </header>
 
       {/* Content */}
-        <div className="w-[100vw] flex justify-center items-start p-2 sm:p-4 gap-2 sm:gap-4 bg-gray-50">
-          <Outlet />
+      <main className="w-[100vw] flex justify-center items-start p-2 sm:p-4 gap-2 sm:gap-4 bg-gray-50 flex-1">
+        <Outlet />
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-700">TutorConnect</span>
+            <span>© {new Date().getFullYear()} All rights reserved.</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link to="/about" className="hover:text-indigo-600 transition-colors">
+              About
+            </Link>
+            <Link to="/contact" className="hover:text-indigo-600 transition-colors">
+              Contact
+            </Link>
+            <Link to="/privacy" className="hover:text-indigo-600 transition-colors">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-indigo-600 transition-colors">
+              Terms
+            </Link>
+          </div>
         </div>
+      </footer>
     </div>
   );
 };
