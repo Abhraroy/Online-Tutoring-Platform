@@ -10,6 +10,7 @@ import isValidPassword from "../Utils/PassWordTest.js";
 import BookingModel from "../DB/Models/BookingModel.js";
 import HiringModel from "../DB/Models/HiringModel.js";
 import FollowModel from "../DB/Models/FollowModel.js";
+import emailTransporter from "../Utils/EmailService.js";
 export const registerStudent = async (req, res) => {
   console.log(req.body);
   //healthy
@@ -539,4 +540,19 @@ export const searchUsersAndTutors = async (req, res) => {
 }
 
 
-
+export const sendEmail = async (req, res) => {
+  try {
+    const { to, subject, text } = req.body;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text
+    };
+    await emailTransporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.log("Error sending email", error);
+    res.status(500).json({ message: error.message });
+  }
+} 

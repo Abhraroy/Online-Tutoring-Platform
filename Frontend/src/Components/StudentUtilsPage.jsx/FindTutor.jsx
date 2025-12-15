@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { useAuth } from '../Context/AuthContext';
 function FindTutor() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,19 +66,29 @@ function FindTutor() {
   };
 
   const handleHire = async (tutor) => {
+    const student = useAuth().userData;
     // Navigate to tutor's sessions or create a booking
     console.log('Hire tutor:', tutor);
+    console.log('Student:', student);
     // You can add navigation logic here
     try {
       const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id });
-      if (response.status === 200) {
+      const emailResponse = await axios.post(`/student/send-email`,
+         { to: tutor.email, subject: "You have been hired",
+          text: `You have been hired by a student. Please contact them to schedule a session.
+          Student Name: ${student.name}
+          Student Email: ${student.email}
+          Student Phone: ${student.phone}
+          Student Grade: ${student.grade}
+          Student Subjects: ${student.subjects.join(', ')}` });
+      if (response.status === 200 && emailResponse.status === 200) {
         alert(`Tutor ${tutor.name} hired successfully`);
       } else {
-        alert(`Failed to hire tutor ${tutor.name}`);
+        alert(`Failed to hire tutor ${tutor.name} or send email`);
       }
     } catch (error) {
       console.error('Error hiring tutor:', error);
-      alert(`Failed to hire tutor ${tutor.name}`);
+      alert(`Failed to hire tutor ${tutor.name} or send email`);
     }
   };
 
@@ -254,11 +264,10 @@ function FindTutor() {
                 <div className="flex gap-3 pt-4 border-t border-gray-100">
                   <button
                     onClick={() => handleFollow(tutor._id)}
-                    className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
-                      followedTutors.has(tutor._id)
-                        ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    } active:scale-95`}
+                    className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${followedTutors.has(tutor._id)
+                      ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      } active:scale-95`}
                   >
                     {followedTutors.has(tutor._id) ? 'Unfollow' : 'Follow'}
                   </button>
