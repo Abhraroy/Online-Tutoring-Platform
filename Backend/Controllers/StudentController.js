@@ -333,3 +333,21 @@ export const getStudentProfile = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+
+export const getAllTutors = async(req,res) =>{
+  try{
+    const role = req.role;
+    if(role !== "student"){
+      return res.status(403).json({message: "Forbidden: Access denied"});
+    }
+    const tutors = await TutorModel.find().select("name email subjects hourlyRate lowerGrade upperGrade experience education certifications");
+    if(tutors.length === 0){
+      return res.status(404).json({message: "No tutors found"});
+    }
+    res.status(200).json({message: "Tutors fetched successfully", tutors});
+
+  }catch(error){
+    res.status(500).json({message: error.message});
+  }
+}

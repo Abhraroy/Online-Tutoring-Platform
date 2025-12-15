@@ -49,6 +49,10 @@ const TutorSchema = new Schema({
     availability: [{
         type: String
     }],
+    rating:[{
+        type: Number,
+        default: 0
+    }],
     certifications: {
         type: String,
         required: false

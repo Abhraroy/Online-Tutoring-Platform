@@ -21,6 +21,7 @@ import StudentProfile from './Components/Profile.jsx/StudentProfile'
 import TutorProfile from './Components/Profile.jsx/TutorPrrofile'
 import StudentEditProfile from './Components/Profile.jsx/StudentEditProfile'
 import TutorEditProfile from './Components/Profile.jsx/TutorEditProfile'
+import FindTutor from './Components/StudentUtilsPage.jsx/FindTutor'
 function App() {
   return (
     <Router>
@@ -59,6 +60,11 @@ function App() {
             <Route path="/student/edit-profile" element={
               <ProtectedRoute role="student">
                 <StudentEditProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/find-tutors" element={
+              <ProtectedRoute role="student">
+                <FindTutor />
               </ProtectedRoute>
             } />
        </Route>

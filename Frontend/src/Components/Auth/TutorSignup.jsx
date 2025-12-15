@@ -5,6 +5,7 @@ import useZustandStore from '../Context/ZustandStore';
 import { useAuth } from '../Context/AuthContext';
 const TutorSignup = () => {
   const { user, loading, error } = useAuth();
+  const { login, setLogin, setUser, setUserData } = useZustandStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (!loading && user?.role === "tutor") {
@@ -16,7 +17,8 @@ const TutorSignup = () => {
     }
   }, [loading, user, navigate, error]);
 
-  const { login, setLogin } = useZustandStore();
+  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',

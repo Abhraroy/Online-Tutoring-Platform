@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import useZustandStore from '../Context/ZustandStore';
+import { useAuth } from '../Context/AuthContext';
 const StudentLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-
+  const {login,setLogin,setUser,setUserData} = useZustandStore();
+  const {user,loading,error} = useAuth();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (!loading && user?.role === "student") {
+      console.log("StudentLogin user",user);
+      navigate("/student-home");
+    }
+  }, [loading, user, navigate]);
+
+  useEffect(() => {
+    // Only navigate on error if it's an authentication error (401/403)
+    // Don't navigate on network errors or other temporary issues
+    if (error && error.response && (error.response.status === 401 || error.response.status === 403)) {
+      console.log("StudentLogin authentication error",error);
+      setLogin(false);
+      navigate("/");
+    }
+  }, [error, navigate, setLogin]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,11 +49,32 @@ const StudentLogin = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (validateForm()) {
       console.log('Student login data:', formData);
-      // TODO: Implement login functionality
+    try{
+      const payload = {
+        email: formData.email,
+        password: formData.password
+      }
+      const response = await axios.post("/student/login", payload);
+      console.log("Student login response",response.data);
+      if(response.status !== 201){
+        alert("Student login failed");
+        navigate("/");
+      }
+      else{
+        // Set login first, then let AuthContext fetch the user data
+        // Don't manually set user/userData here as AuthContext will handle it
+        setLogin(true);
+        // Navigate after a brief delay to allow AuthContext to update
+      }
+    }catch(error){
+      console.log("Student login error",error);
+      alert("Student login failed");
+      navigate("/");
+    }
     }
   };
 

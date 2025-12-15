@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerStudent, loginStudent, bookSession, getSessions, getBookedSessions, logoutStudent, getSessionById, deleteBookedSession, getStudentProfile, updateStudentProfile } from "../Controllers/StudentController.js";
+import { registerStudent, loginStudent, bookSession, getSessions, getBookedSessions, logoutStudent, getSessionById, deleteBookedSession, getStudentProfile, updateStudentProfile, getAllTutors } from "../Controllers/StudentController.js";
 import { authMiddleware } from "../Middleware/AuthMiddleware.js";
 
 const router = Router();
@@ -15,6 +15,7 @@ router.get("/booked-sessions", authMiddleware("student"), getBookedSessions);
 router.get("/profile", authMiddleware("student"), getStudentProfile);
 router.delete("/booked-sessions/:sessionId", authMiddleware("student"), deleteBookedSession);
 router.put("/profile", authMiddleware("student"), updateStudentProfile);
+router.get("/all-tutors", authMiddleware("student"), getAllTutors);
 
 
 
