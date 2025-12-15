@@ -12,7 +12,7 @@ const StudentLayout = () => {
   const { setLogin, setUser, setUserData } = useZustandStore();
 
   const handleLogout = async () => {
-    const response = await axios.post('/student/logout');
+    const response = await axios.post('/student/logout', {}, { withCredentials: true });
     if(response.status === 200){
       setLogin(false);
       setUser(null);

@@ -20,7 +20,7 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
     const fetchSession = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/student/session/${sessionId}`)
+        const response = await axios.get(`/student/session/${sessionId}`, { withCredentials: true })
         setSession(response.data.session)
       } catch (error) {
         console.error('Error fetching session:', error)
@@ -35,7 +35,7 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
     try {
       setBooking(true) 
       
-      const response = await axios.post(`/student/book/${sessionId}`)
+      const response = await axios.post(`/student/book/${sessionId}`, {}, { withCredentials: true })
       const emailResponse = await axios.post(`/student/send-email`,
          { to: session.tutorId.email, subject: "Your session has been booked",
           text: `Your session have been booked by a student.
@@ -43,7 +43,7 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
           Student Email: ${userData.email}
           Student Phone: ${userData.phone}
           Student Grade: ${userData.grade}
-          Student Subjects: ${userData.subjects.join(', ')}` });
+          Student Subjects: ${userData.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         alert(`Session booked successfully`);
       } else {

@@ -19,6 +19,7 @@ console.log("sameSite", sameSite);
 export const registerStudent = async (req, res) => {
   console.log(req.body);
   //healthy
+  console.log("hitting StudentController",req);
   try {
     const { name, email, password, grade, subjects, phone, agreeToTerms } = req.body;
     if (!name || !email || !password || !grade || !subjects || !phone || !agreeToTerms) {
@@ -53,6 +54,7 @@ export const registerStudent = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
+
 
     res.cookie("token", sttoken, {
       httpOnly: true,

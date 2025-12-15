@@ -9,7 +9,7 @@ const HiredSession = () => {
     const fetchHiredStudents = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/tutor/hired-by-students');
+        const response = await axios.get('/tutor/hired-by-students', { withCredentials: true });
         if (response.status === 200) {
           const raw = response.data.hiredStudents || [];
           const mappedStudents = raw

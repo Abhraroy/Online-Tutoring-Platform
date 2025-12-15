@@ -13,7 +13,7 @@ function StudentBookedSessions() {
     const fetchBookedSessions = async () => {
       try {
         setLoading(true)
-        const response = await axios.get('/student/booked-sessions')
+        const response = await axios.get('/student/booked-sessions', { withCredentials: true })
         console.log(response.data.sessions)
         setBookedSessions(response.data.sessions || [])
       } catch (error) {
@@ -35,7 +35,7 @@ function StudentBookedSessions() {
       setCancelError(null)
       setCancelling(sessionId)
       // Must include the /student prefix to match backend route: DELETE /student/booked-sessions/:sessionId
-      const response = await axios.delete(`/student/booked-sessions/${sessionId}`)
+      const response = await axios.delete(`/student/booked-sessions/${sessionId}`, { withCredentials: true })
       console.log(response.data)
       setBookedSessions(prev => prev.filter(session => session._id !== sessionId))
     } catch (error) {

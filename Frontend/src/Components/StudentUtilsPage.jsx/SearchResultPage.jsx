@@ -44,6 +44,7 @@ const SearchResultPage = () => {
         setError(null);
         const response = await axios.get('/student/search', {
           params: { q: debouncedQuery },
+          withCredentials: true
         });
         if (response.status === 200) {
           setSessions(response.data.sessions || []);

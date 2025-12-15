@@ -116,7 +116,7 @@ function CreateSession() {
           status: formData.status || 'open'
         };
 
-        const response = await axios.post('/tutor/create-session', payload);
+        const response = await axios.post('/tutor/create-session', payload, { withCredentials: true });
         console.log('Session created successfully:', response.data);
         
         // Redirect to tutor home after successful creation

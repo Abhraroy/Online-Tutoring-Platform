@@ -12,11 +12,15 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         const checkAuth = async () => {
+            console.log("AuthContext checkAuth");
             try {
-              const res = await axios.get("/api/user"); // cookie-based
+              const res = await axios.get("/api/user", { withCredentials: true }); // cookie-based
               setUser(res.data.decoded);
+              console.log("AuthContext",res.data.decoded);
               setLogin(true);
+              console.log("AuthContext login",res);
             } catch {
+              console.log("AuthContext error",error);
               setUser(null);
               setLogin(false);
             } finally {
@@ -38,7 +42,7 @@ export const AuthProvider = ({children}) => {
 
             try {
                 // First, get the decoded token with role and id
-                const response = await axios.get('/api/user');
+                const response = await axios.get('/api/user',{withCredentials:true});
                 console.log("AuthContext",response.data);
                 const decoded = response.data.decoded;
                 if (decoded) {
@@ -51,13 +55,13 @@ export const AuthProvider = ({children}) => {
                         try {
                             let profileResponse;
                             if (decoded.role === 'student') {
-                                profileResponse = await axios.get('/student/profile');
+                                profileResponse = await axios.get('/student/profile',{withCredentials:true});
                                 console.log("Student profile", profileResponse.data);
                                 if (profileResponse.data && profileResponse.data.student) {
                                     setUserData(profileResponse.data.student);
                                 }
                             } else if (decoded.role === 'tutor') {
-                                profileResponse = await axios.get('/tutor/profile');
+                                profileResponse = await axios.get('/tutor/profile',{withCredentials:true});
                                 console.log("Tutor profile", profileResponse.data);
                                 if (profileResponse.data && profileResponse.data.tutor) {
                                     setUserData(profileResponse.data.tutor);

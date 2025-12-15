@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const getUser = async(req, res) => {
     console.log("Healthy usercontroller")
+    console.log("UserController",req);
     console.log("UserController",req.cookies);
     try {
         const token = req.cookies?.token;

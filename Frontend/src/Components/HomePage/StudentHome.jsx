@@ -142,7 +142,7 @@ function StudentHome() {
         console.log("Query params:", queryParams)
         console.log("Full URL:", `/student/sessions${queryParams}`)
         // Fetch sessions with grade filter if available
-        const response = await axios.get(`/student/sessions${queryParams}`)
+        const response = await axios.get(`/student/sessions${queryParams}`, { withCredentials: true })
         const allSessions = response.data.sessions || []
         console.log("Sessions received:", allSessions.length)
         console.log("Sample session grades:", allSessions.slice(0, 3).map(s => s.grade))
@@ -174,7 +174,7 @@ function StudentHome() {
       try {
         setLoadingAllSessions(true)
         // Fetch all sessions without any grade or subject filters
-        const response = await axios.get(`/student/sessions`)
+        const response = await axios.get(`/student/sessions`, { withCredentials: true })
         const allUnfilteredSessions = response.data.sessions || []
         setAllSessionsUnfiltered(allUnfilteredSessions)
         console.log("All sessions unfiltered:", allUnfilteredSessions)

@@ -19,7 +19,7 @@ function FindTutor() {
     const fetchTutors = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/student/all-tutors');
+        const response = await axios.get('/student/all-tutors', { withCredentials: true });
         if (response.status === 200) {
           setTutors(response.data.tutors || []);
         }
@@ -35,7 +35,7 @@ function FindTutor() {
 
   const handleFollow = async (tutorId) => {
     try {
-      const response = await axios.post(`/student/follow/${tutorId}`);
+      const response = await axios.post(`/student/follow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         setFollowedTutors(prev => {
           const newSet = new Set(prev);
@@ -53,7 +53,7 @@ function FindTutor() {
 
   const handleUnfollow = async (tutorId) => {
     try {
-      const response = await axios.post(`/student/unfollow/${tutorId}`);
+      const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         alert(`Tutor ${tutor.name} unfollowed successfully`);
       } else {
@@ -72,7 +72,7 @@ function FindTutor() {
     console.log('Student:', student);
     // You can add navigation logic here
     try {
-      const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id });
+      const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id }, { withCredentials: true });
       const emailResponse = await axios.post(`/student/send-email`,
          { to: tutor.email, subject: "You have been hired",
           text: `You have been hired by a student. Please contact them to schedule a session.
@@ -80,7 +80,7 @@ function FindTutor() {
           Student Email: ${student.email}
           Student Phone: ${student.phone}
           Student Grade: ${student.grade}
-          Student Subjects: ${student.subjects.join(', ')}` });
+          Student Subjects: ${student.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         alert(`Tutor ${tutor.name} hired successfully`);
       } else {

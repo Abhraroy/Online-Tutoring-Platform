@@ -58,7 +58,7 @@ const StudentLogin = () => {
         email: formData.email,
         password: formData.password
       }
-      const response = await axios.post("/student/login", payload);
+      const response = await axios.post("/student/login", payload, { withCredentials: true });
       console.log("Student login response",response.data);
       if(response.status !== 201){
         alert("Student login failed");

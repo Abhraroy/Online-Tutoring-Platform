@@ -13,7 +13,7 @@ const TutorEditProfile = () => {
     if (!loading && user?.role === "tutor") {
       console.log("TutorEditProfile user", user);
       const fetchProfile = async () => {
-        const response = await axios.get("/tutor/profile");
+        const response = await axios.get("/tutor/profile", { withCredentials: true });
         if (response.status !== 200) {
           navigate("/tutor/profile");
         }
@@ -161,7 +161,7 @@ const TutorEditProfile = () => {
           certifications: formData.certifications,
           languages: formData.languages
         }
-        const response = await axios.put("/tutor/profile", payload);
+        const response = await axios.put("/tutor/profile", payload, { withCredentials: true });
         console.log(response.data);
         if (response.status !== 201) {
           navigate("/tutor/edit-profile");

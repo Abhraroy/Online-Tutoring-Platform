@@ -9,7 +9,7 @@ const TutorLayout = () => {
   const navigate = useNavigate();
   const { setLogin, setUser, setUserData } = useZustandStore();
   const handleLogout = async () => {
-    try{const response = await axios.post('/tutor/logout');
+    try{const response = await axios.post('/tutor/logout', {}, { withCredentials: true });
     if(response.status === 200){
       console.log("Tutor logged out successfully");
       setLogin(false);
