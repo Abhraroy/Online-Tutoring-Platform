@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerStudent, loginStudent, bookSession, getSessions, getBookedSessions, logoutStudent, getSessionById, deleteBookedSession, getStudentProfile, updateStudentProfile, getAllTutors, hireTutor, followTutor, unfollowTutor, getFollowedTutors, pastSessions } from "../Controllers/StudentController.js";
+import { registerStudent, loginStudent, bookSession, getSessions, getBookedSessions, logoutStudent, getSessionById, deleteBookedSession, getStudentProfile, updateStudentProfile, getAllTutors, hireTutor, followTutor, unfollowTutor, getFollowedTutors, pastSessions, rateTutor, searchUsersAndTutors } from "../Controllers/StudentController.js";
 import { authMiddleware } from "../Middleware/AuthMiddleware.js";
 
 const router = Router();
@@ -21,5 +21,6 @@ router.post("/follow/:tutorId", authMiddleware("student"), followTutor);
 router.post("/unfollow/:tutorId", authMiddleware("student"), unfollowTutor);
 router.get("/followed-tutors", authMiddleware("student"), getFollowedTutors);
 router.get("/past-sessions", authMiddleware("student"), pastSessions);
-
+router.post("/rate-tutor/:tutorId", authMiddleware("student"), rateTutor);
+router.get("/search", authMiddleware("student"), searchUsersAndTutors);
 export default router;

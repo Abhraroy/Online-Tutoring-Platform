@@ -35,8 +35,10 @@ const StudentLayout = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Handle search functionality here
-    console.log('Searching for:', searchQuery);
+    const q = searchQuery.trim();
+    if (q) {
+      navigate(`/search?q=${encodeURIComponent(q)}`);
+    }
   }
 
   return (

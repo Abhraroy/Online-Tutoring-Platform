@@ -195,14 +195,13 @@ export const bookSession = async (req, res) => {
 export const getSessions = async (req, res) => {
   //healthy
   try {
-    
     const role = req.role;
-    const { grade } = req.query;
+    const { grade, q } = req.query;
     if (role !== "student") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
     console.log("Received grade query param:", grade);
-    console.log("Grade type:", typeof grade);
+    console.log("Received search query param (q):", q);
     console.log("Role:", role);
     let filter = {};
     if (grade) {
@@ -210,8 +209,13 @@ export const getSessions = async (req, res) => {
       const normalizedGrade = String(grade).trim();
       filter.grade = normalizedGrade;
       console.log("Filter with grade (normalized):", filter);
-    } else {
-      console.log("No grade provided, fetching all sessions");
+    }
+    // Optional subject search using `q`
+    let regex = null;
+    if (q && q.trim()) {
+      regex = new RegExp(q.trim(), "i");
+      filter.subject = regex;
+      console.log("Filter with subject search (q):", filter);
     }
     // Filter by available slots > 0 instead of just status === "pending"
     // This allows sessions with available slots to show even if some students have booked
@@ -225,16 +229,25 @@ export const getSessions = async (req, res) => {
       "tutorId",
       "name email subject grade availableSlots topic"
     );
-    console.log("Found sessions:", sessions.length);
+    let filteredSessions = sessions;
+    // If searching by q, also allow matches on tutor name in addition to subject
+    if (regex) {
+      filteredSessions = sessions.filter(
+        (s) =>
+          regex.test(s.subject) ||
+          (s.tutorId && regex.test(s.tutorId.name))
+      );
+    }
+    console.log("Found sessions:", filteredSessions.length);
     if (sessions.length > 0) {
       console.log("Sample session grades in DB:", sessions.slice(0, 3).map(s => s.grade));
     }
-    if (sessions.length === 0) {
+    if (filteredSessions.length === 0) {
       return res.status(404).json({ message: "No sessions found" });
     }
     res
       .status(200)
-      .json({ message: "Sessions fetched successfully", sessions });
+      .json({ message: "Sessions fetched successfully", sessions: filteredSessions });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -343,7 +356,7 @@ export const getAllTutors = async(req,res) =>{
     if(role !== "student"){
       return res.status(403).json({message: "Forbidden: Access denied"});
     }
-    const tutors = await TutorModel.find().select("name email subjects hourlyRate lowerGrade upperGrade experience education certifications");
+    const tutors = await TutorModel.find().select("name email subjects hourlyRate lowerGrade upperGrade experience education certifications rating");
     if(tutors.length === 0){
       return res.status(404).json({message: "No tutors found"});
     }
@@ -438,7 +451,9 @@ export const pastSessions = async (req, res) => {
     if (role !== "student") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const pastSessions = await BookingModel.find({ studentId, status: "completed" }).populate("sessionId", "subject topic date duration capacity fee availableSlots status grade").populate("tutorId", "name email");
+    const pastSessions = await BookingModel.find({ studentId, status: "completed" })
+      .populate("sessionId", "subject topic date duration capacity fee availableSlots status grade")
+      .populate("tutorId", "name email rating");
     if (pastSessions.length === 0) {
       return res.status(404).json({message: "No past sessions found"});
     }
@@ -447,3 +462,81 @@ export const pastSessions = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
+
+
+export const rateTutor = async (req, res) => {
+  try {
+    const { tutorId } = req.params;
+    const { rating } = req.body;
+    const studentId = req.userId;
+    const role = req.role;
+    if (role !== "student") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const tutor = await TutorModel.findById(tutorId);
+    if (!tutor) {
+      return res.status(404).json({message: "Tutor not found"});
+    }
+    const student = await StudentModel.findById(studentId);
+    if (!student) {
+      return res.status(404).json({message: "Student not found"});
+    }
+    if (typeof rating !== "number" || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be a number between 1 and 5" });
+    }
+    const updatedTutor = await TutorModel.findByIdAndUpdate(
+      tutorId,
+      { $push: { rating: rating } },
+      { new: true }
+    ).select("name email rating");
+    res.status(200).json({message: "Tutor rated successfully", tutor: updatedTutor});
+  } catch (error) {
+    console.log("Error rating tutor", error);
+    res.status(500).json({message: error.message});
+  }
+}
+
+export const searchUsersAndTutors = async (req, res) => {
+  try {
+    const role = req.role;
+    if (role !== "student") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const { q } = req.query;
+    const query = (q || "").trim();
+
+    if (!query) {
+      return res.status(400).json({ message: "Query parameter 'q' is required" });
+    }
+
+    const regex = new RegExp(query, "i");
+
+    // Search sessions by subject or tutor name
+    const baseFilter = {
+      availableSlots: { $gt: 0 },
+      date: { $gte: new Date() }
+    };
+
+    const sessionsFromDb = await SessionModel.find(baseFilter).populate(
+      "tutorId",
+      "name email subject grade availableSlots topic"
+    );
+
+    const sessions = sessionsFromDb.filter(
+      (s) =>
+        regex.test(s.subject) ||
+        (s.tutorId && regex.test(s.tutorId.name))
+    );
+
+    res.status(200).json({
+      message: "Search results fetched successfully",
+      sessions
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
+

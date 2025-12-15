@@ -7,6 +7,14 @@ function FindTutor() {
   const [error, setError] = useState(null);
   const [followedTutors, setFollowedTutors] = useState(new Set());
 
+  const getAverageRating = (tutor) => {
+    if (!tutor || !Array.isArray(tutor.rating) || tutor.rating.length === 0) return null;
+    const sum = tutor.rating.reduce((acc, val) => acc + (Number(val) || 0), 0);
+    const avg = sum / tutor.rating.length;
+    if (!isFinite(avg) || avg <= 0) return null;
+    return avg.toFixed(1);
+  };
+
   useEffect(() => {
     const fetchTutors = async () => {
       try {
@@ -136,6 +144,20 @@ function FindTutor() {
                         {tutor.name}
                       </h3>
                       <p className="text-sm text-gray-500">{tutor.email}</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        {getAverageRating(tutor) ? (
+                          <>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-50 text-xs font-medium text-yellow-800 border border-yellow-200">
+                              <svg className="h-3.5 w-3.5 mr-1 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.383 2.46a1 1 0 00-.364 1.118l1.287 3.974c.3.922-.755 1.688-1.54 1.118L10 14.347l-3.383 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.974a1 1 0 00-.364-1.118L2.618 9.401C1.835 8.83 2.237 7.59 3.206 7.59h4.178a1 1 0 00.95-.69l1.286-3.974z" />
+                              </svg>
+                              {getAverageRating(tutor)} / 5
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400">No ratings yet</span>
+                        )}
+                      </div>
                     </div>
                     <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                       <span className="text-gray-600 font-semibold text-lg">

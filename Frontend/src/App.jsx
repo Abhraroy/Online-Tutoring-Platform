@@ -25,6 +25,7 @@ import FindTutor from './Components/StudentUtilsPage.jsx/FindTutor'
 import FollowedTutor from './Components/StudentUtilsPage.jsx/FollowedTutor'
 import PastSession from './Components/StudentUtilsPage.jsx/PastSession'
 import HiredSession from './Components/TutorUtilsPages/HiredSession'
+import SearchResultPage from './Components/StudentUtilsPage.jsx/SearchResultPage'
 import HistorySession from './Components/TutorUtilsPages/HistorySession'
 function App() {
   return (
@@ -74,6 +75,11 @@ function App() {
             <Route path="/past-sessions" element={
               <ProtectedRoute role="student">
                 <PastSession />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute role="student">
+                <SearchResultPage />
               </ProtectedRoute>
             } />
             <Route path="/followed-tutors" element={
