@@ -8,7 +8,12 @@ import SessionModel from "../DB/Models/SessionModel.js";
 import isValidEmail from "../Utils/EmailTest.js";
 import isValidPassword from "../Utils/PassWordTest.js";
 import BookingModel from "../DB/Models/BookingModel.js";
+import HiringModel from "../DB/Models/HiringModel.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const sameSite = isProduction ? "none" : "lax";
+console.log("isProduction", isProduction);
+console.log("sameSite", sameSite);
 export const registerTutor = async (req, res) => { //healthy
   try {
     const { 
@@ -71,7 +76,7 @@ export const registerTutor = async (req, res) => { //healthy
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: false, maxAge: 72 * 60 * 60 * 1000 });
+    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
     res
       .status(201)
       .json({ message: "Tutor created successfully", tutor });
@@ -112,7 +117,7 @@ export const loginTutor = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: false, maxAge: 72 * 60 * 60 * 1000 });
+    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
     res.status(201).json({
       message: "Tutor logged in successfully",
       existingTutor,
@@ -225,7 +230,7 @@ export const getBookedTutorSessions = async (req, res) => {
     if(role !== "tutor"){
       return res.status(403).json({message: "Forbidden: Access denied"});
     }
-    const bookedSessions = await BookingModel.find({tutorId, status: "confirmed"}).populate("studentId", "name email phone").populate("sessionId", "subject topic date duration capacity fee");
+    const bookedSessions = await BookingModel.find({tutorId, status: "pending"}).populate("studentId", "name email phone").populate("sessionId", "subject topic date duration capacity fee");
     if(bookedSessions.length === 0){
       return res.status(404).json({message: "No sessions found"});
     }
@@ -303,8 +308,8 @@ export const logoutTutor = async (req, res) => {
   try {
     res.clearCookie("token",{
       httpOnly: true,
-      secure: false,
-      maxAge: 0
+      secure: isProduction,
+      sameSite: sameSite,
     })
     res.status(200).json({message: "Tutor logged out successfully"});
   } catch (error) {
@@ -326,5 +331,80 @@ export const getTutorProfile = async (req, res) => {
     res.status(200).json({ message: "Tutor profile fetched successfully", tutor });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+}
+
+export const getHiredByStudents = async (req, res) => {
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const hiredStudents = await HiringModel.find({tutorId}).populate("studentId", "name email phone");
+    if (hiredStudents.length === 0) {
+      return res.status(404).json({message: "No students hired"});
+    }
+    res.status(200).json({message: "Students hired successfully", hiredStudents});
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+export const tutorPastSessions = async (req, res) => {
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const pastSessions = await BookingModel.find({ tutorId, status: "completed" }).populate("sessionId", "subject topic date duration capacity fee availableSlots status grade").populate("studentId", "name email phone");
+    if (pastSessions.length === 0) {
+      return res.status(404).json({message: "No past sessions found"});
+    }
+    res.status(200).json({message: "Past sessions fetched successfully", pastSessions});
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+export const EditBookedTutorSession = async (req, res) => {
+  console.log("EditBookedTutorSession", req.body);
+  console.log("EditBookedTutorSession", req.params);
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const { sessionId } = req.params; 
+    console.log("sessionId", sessionId); // booking id
+    const booking = await BookingModel.findById(sessionId);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Ensure the booking belongs to the tutor making the request
+    if (String(booking.tutorId) !== String(tutorId)) {
+      return res.status(403).json({ message: "Forbidden: Not your booking" });
+    }
+
+    // Mark booking as completed
+    booking.status = "completed";
+    await booking.save();
+
+    // Also mark the session as completed if it exists
+    if (booking.sessionId) {
+      const session = await SessionModel.findById(booking.sessionId);
+      if (session) {
+        session.status = "completed";
+        await session.save();
+      }
+    }
+
+    res.status(200).json({ message: "Booking marked as completed", booking });
+  } catch (error) {
+    res.status(500).json({message: error.message});
   }
 }

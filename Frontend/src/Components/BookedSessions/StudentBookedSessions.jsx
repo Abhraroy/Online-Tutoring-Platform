@@ -6,6 +6,7 @@ function StudentBookedSessions() {
   const [bookedSessions, setBookedSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(null)
+  const [cancelError, setCancelError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -26,13 +27,20 @@ function StudentBookedSessions() {
   }, [navigate])
 
   const handleCancelSession = async (sessionId) => {
+    // Ask for confirmation before cancelling
+    const confirmed = window.confirm('Are you sure you want to cancel this session?')
+    if (!confirmed) return
+
     try {
+      setCancelError(null)
       setCancelling(sessionId)
+      // Must include the /student prefix to match backend route: DELETE /student/booked-sessions/:sessionId
       const response = await axios.delete(`/student/booked-sessions/${sessionId}`)
       console.log(response.data)
       setBookedSessions(prev => prev.filter(session => session._id !== sessionId))
     } catch (error) {
       console.error('Error cancelling session:', error)
+      setCancelError('Failed to cancel the session. Please try again.')
     } finally {
       setCancelling(null)
     }
@@ -98,6 +106,11 @@ function StudentBookedSessions() {
                 </div>
               </div>
             </div>
+            {cancelError && (
+              <div className="mt-4 px-4 py-2 rounded-md bg-red-50 border border-red-200 text-sm text-red-700">
+                {cancelError}
+              </div>
+            )}
           </div>
         </div>
 
@@ -133,15 +146,25 @@ function StudentBookedSessions() {
                 {/* Card Header */}
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-5 border-b border-gray-100">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors mb-2 truncate">
-                        {session.sessionId?.subject || 'Subject Not Specified'}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-indigo-700 transition-colors truncate">
+                        {session.sessionId?.topic || session.sessionId?.subject || 'Session'}
                       </h3>
-                      <div className="flex items-center mt-1">
-                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2 flex-shrink-0"></span>
-                        <span className="text-sm font-medium text-gray-600 truncate">
-                          {session.sessionId?.tutorId?.name || 'Tutor Name'}
-                        </span>
+                      <p className="text-sm font-medium text-indigo-700 truncate">
+                        {session.sessionId?.subject || 'Subject not specified'}
+                      </p>
+                      <div className="mt-1">
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          Tutor
+                        </p>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-800 truncate">
+                            {session.tutorId?.name || 'Tutor Name'}
+                          </span>
+                          <span className="text-xs text-gray-600 truncate">
+                            {session.tutorId?.email || 'Email not available'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <span className={`shrink-0 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold border whitespace-nowrap ${getStatusColor(session.status)}`}>
@@ -217,28 +240,35 @@ function StudentBookedSessions() {
                         </svg>
                         View Details
                       </button>
-                      <button
-                        onClick={() => handleCancelSession(session._id)}
-                        disabled={cancelling === session._id || session.status === 'completed' || session.status === 'cancelled'}
-                        className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
-                      >
-                        {cancelling === session._id ? (
-                          <>
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Cancelling...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Cancel
-                          </>
-                        )}
-                      </button>
+
+                      {session.status !== 'completed' && session.status !== 'cancelled' ? (
+                        <button
+                          onClick={() => handleCancelSession(session._id)}
+                          disabled={cancelling === session._id}
+                          className="flex-1 inline-flex items-center justify-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                        >
+                          {cancelling === session._id ? (
+                            <>
+                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Cancelling...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              Cancel
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <div className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-semibold text-gray-500 bg-gray-100 border border-gray-200 cursor-default">
+                          {session.status === 'completed' ? 'Completed' : 'Cancelled'}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -79,6 +79,38 @@ function TutorBookedSessions() {
     return groupedSessions[selectedSessionId].students || []
   }
 
+  const handleMarkCompleted = async (sessionId) => {
+    // Find all booking documents for this sessionId
+    const bookingsForSession = bookedSessions.filter(b => {
+      const sid = b.sessionId?._id || b.sessionId
+      return sid === sessionId
+    })
+
+    if (bookingsForSession.length === 0) return
+
+    try {
+      // Mark all bookings for this session as completed
+      for (const booking of bookingsForSession) {
+        if (!booking._id) continue
+        await axios.put(`/tutor/booked-sessions/${booking._id}`, { status: "completed" })
+      }
+
+      // Remove this session group from current view
+      const updatedGrouped = { ...groupedSessions }
+      delete updatedGrouped[sessionId]
+      setGroupedSessions(updatedGrouped)
+      setBookedSessions(prev => prev.filter(b => {
+        const sid = b.sessionId?._id || b.sessionId
+        return sid !== sessionId
+      }))
+
+      alert('Session marked as completed. You can now view it under Past Sessions.')
+    } catch (error) {
+      console.error('Error marking session as completed:', error)
+      alert('Failed to mark session as completed. Please try again.')
+    }
+  }
+
   const uniqueSessions = Object.values(groupedSessions)
 
   return (
@@ -158,16 +190,27 @@ function TutorBookedSessions() {
                       </div>
                     </div>
                     
-                    {/* View Students Button */}
-                    <button
-                      onClick={() => handleViewStudents(sessionId)}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      View All Students ({students.length})
-                    </button>
+                    <div className="flex flex-col gap-2 mt-2">
+                      {/* View Students Button */}
+                      <button
+                        onClick={() => handleViewStudents(sessionId)}
+                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        View All Students ({students.length})
+                      </button>
+                      <button
+                        onClick={() => handleMarkCompleted(sessionId)}
+                        className="w-full border border-green-600 text-green-700 hover:bg-green-50 font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Mark as Completed
+                      </button>
+                    </div>
                   </div>
                 )
               })}

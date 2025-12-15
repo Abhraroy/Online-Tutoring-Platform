@@ -43,12 +43,13 @@ const TutorLogin = () => {
         }
         const response = await axios.post("/tutor/login", payload);
         console.log("Tutor login response",response.data);
+        setLogin(true);
         if(response.status !== 201){
             alert("Tutor login failed");
             navigate("/tutor-login");
         }
         else{
-          setLogin(true);
+          setLogin(false);
           navigate("/tutor-home",{replace:true});
         }
       }catch(error){
