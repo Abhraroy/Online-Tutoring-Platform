@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
-
+import { useAuth } from '../Context/AuthContext';
 function SessionDetail({ showBookButton: propShowBookButton = true }) {
+  const { userData } = useAuth();
   const navigate = useNavigate()
   const location = useLocation()
   const { sessionId } = useParams()
@@ -32,16 +33,17 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
 
   const handleBooking = async () => {
     try {
-      setBooking(true)
+      setBooking(true) 
+      
       const response = await axios.post(`/student/book/${sessionId}`)
       const emailResponse = await axios.post(`/student/send-email`,
          { to: session.tutorId.email, subject: "Your session has been booked",
           text: `Your session have been booked by a student.
-          Student Name: ${student.name}
-          Student Email: ${student.email}
-          Student Phone: ${student.phone}
-          Student Grade: ${student.grade}
-          Student Subjects: ${student.subjects.join(', ')}` });
+          Student Name: ${userData.name}
+          Student Email: ${userData.email}
+          Student Phone: ${userData.phone}
+          Student Grade: ${userData.grade}
+          Student Subjects: ${userData.subjects.join(', ')}` });
       if (response.status === 200 && emailResponse.status === 200) {
         alert(`Session booked successfully`);
       } else {

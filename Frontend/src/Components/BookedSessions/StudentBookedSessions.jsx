@@ -6,6 +6,7 @@ function StudentBookedSessions() {
   const [bookedSessions, setBookedSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(null)
+  const [cancelError, setCancelError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -26,13 +27,20 @@ function StudentBookedSessions() {
   }, [navigate])
 
   const handleCancelSession = async (sessionId) => {
+    // Ask for confirmation before cancelling
+    const confirmed = window.confirm('Are you sure you want to cancel this session?')
+    if (!confirmed) return
+
     try {
+      setCancelError(null)
       setCancelling(sessionId)
+      // Must include the /student prefix to match backend route: DELETE /student/booked-sessions/:sessionId
       const response = await axios.delete(`/student/booked-sessions/${sessionId}`)
       console.log(response.data)
       setBookedSessions(prev => prev.filter(session => session._id !== sessionId))
     } catch (error) {
       console.error('Error cancelling session:', error)
+      setCancelError('Failed to cancel the session. Please try again.')
     } finally {
       setCancelling(null)
     }
@@ -98,6 +106,11 @@ function StudentBookedSessions() {
                 </div>
               </div>
             </div>
+            {cancelError && (
+              <div className="mt-4 px-4 py-2 rounded-md bg-red-50 border border-red-200 text-sm text-red-700">
+                {cancelError}
+              </div>
+            )}
           </div>
         </div>
 

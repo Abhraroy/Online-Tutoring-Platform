@@ -313,6 +313,7 @@ export const deleteBookedSession = async (req, res) => {
       return res.status(404).json({message: "Booking not found"});
     }
     const session = await SessionModel.findById(bookingSession.sessionId).populate("tutorId");
+    console.log(session)
     if(!session){
       return res.status(404).json({message: "Session not found"});
     }
@@ -320,11 +321,8 @@ export const deleteBookedSession = async (req, res) => {
     
     // Increment available slots when booking is cancelled
     session.availableSlots += 1;
-    
+    console.log(session.availableSlots)
     // If slots become available, change status back to "pending"
-    if (session.availableSlots > 0) {
-      session.status = "pending";
-    }
     
     await session.save();
     res.status(200).json({message: "Session deleted successfully"});
