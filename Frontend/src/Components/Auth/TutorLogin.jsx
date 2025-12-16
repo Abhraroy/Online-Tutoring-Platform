@@ -41,7 +41,7 @@ const TutorLogin = () => {
           email: formData.email,
           password: formData.password
         }
-        const response = await axios.post("/tutor/login", payload);
+        const response = await axios.post("/tutor/login", payload, { withCredentials: true });
         console.log("Tutor login response",response.data);
         setLogin(true);
         if(response.status !== 201){

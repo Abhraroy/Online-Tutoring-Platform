@@ -11,7 +11,7 @@ const HistorySession = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('/tutor/past-sessions');
+        const response = await axios.get('/tutor/past-sessions', { withCredentials: true });
         if (response.status === 200) {
           const allSessions = response.data.pastSessions || [];
           setSessions(allSessions);

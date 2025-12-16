@@ -6,6 +6,11 @@ function FindTutor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [followedTutors, setFollowedTutors] = useState(new Set());
+  const [student, setStudent] = useState(null);
+  const studentData = useAuth().userData;
+  useEffect(() => {
+    setStudent(studentData);
+  }, [studentData]);
 
   const getAverageRating = (tutor) => {
     if (!tutor || !Array.isArray(tutor.rating) || tutor.rating.length === 0) return null;
@@ -19,7 +24,7 @@ function FindTutor() {
     const fetchTutors = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/student/all-tutors');
+        const response = await axios.get('/student/all-tutors', { withCredentials: true });
         if (response.status === 200) {
           setTutors(response.data.tutors || []);
         }
@@ -35,7 +40,7 @@ function FindTutor() {
 
   const handleFollow = async (tutorId) => {
     try {
-      const response = await axios.post(`/student/follow/${tutorId}`);
+      const response = await axios.post(`/student/follow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         setFollowedTutors(prev => {
           const newSet = new Set(prev);
@@ -53,7 +58,7 @@ function FindTutor() {
 
   const handleUnfollow = async (tutorId) => {
     try {
-      const response = await axios.post(`/student/unfollow/${tutorId}`);
+      const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         alert(`Tutor ${tutor.name} unfollowed successfully`);
       } else {
@@ -66,13 +71,13 @@ function FindTutor() {
   };
 
   const handleHire = async (tutor) => {
-    const student = useAuth().userData;
+    
     // Navigate to tutor's sessions or create a booking
     console.log('Hire tutor:', tutor);
     console.log('Student:', student);
     // You can add navigation logic here
     try {
-      const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id });
+      const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id }, { withCredentials: true });
       const emailResponse = await axios.post(`/student/send-email`,
          { to: tutor.email, subject: "You have been hired",
           text: `You have been hired by a student. Please contact them to schedule a session.
@@ -80,15 +85,26 @@ function FindTutor() {
           Student Email: ${student.email}
           Student Phone: ${student.phone}
           Student Grade: ${student.grade}
-          Student Subjects: ${student.subjects.join(', ')}` });
+          Student Subjects: ${student.subjects.join(', ')}` }, { withCredentials: true });
+      const studentEmailResponse = await axios.post(`/student/send-email`,
+         { to: student.email, subject: "You have a tutor",
+          text: `You have  hired a tutor. Please contact them to schedule a session.
+          Tutor Name: ${tutor.name}
+          Tutor Email: ${tutor.email}
+          Tutor Phone: ${tutor.phone}
+          Tutor Subjects: ${tutor.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         alert(`Tutor ${tutor.name} hired successfully`);
-      } else {
+      } else if (response.status === 409) {
         alert(`Failed to hire tutor ${tutor.name} or send email`);
       }
     } catch (error) {
-      console.error('Error hiring tutor:', error);
-      alert(`Failed to hire tutor ${tutor.name} or send email`);
+      if (error.response.status === 409) {
+        alert(`Tutor already hired`);
+        } else {
+          alert(`Failed to hire tutor ${tutor.name} or send email`);
+        }
+        console.error('Error hiring tutor:', error);
     }
   };
 

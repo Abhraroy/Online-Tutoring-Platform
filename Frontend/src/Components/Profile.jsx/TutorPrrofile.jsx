@@ -11,7 +11,7 @@ function TutorProfile() {
     console.log("TutorProfile userData", userData);
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/tutor/logout');
+      const response = await axios.post('/tutor/logout', {}, { withCredentials: true });
       if (response.status === 200) {
         setLogin(false);
         setUser(null);

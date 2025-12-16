@@ -144,7 +144,7 @@ const TutorSignup = () => {
           languages: formData.languages
         };
 
-        const response = await axios.post('/tutor/register', payload);
+        const response = await axios.post('/tutor/register', payload, { withCredentials: true });
         console.log('Registration successful:', response.data);
         // Handle successful registration (redirect, show success message, etc.)
         if (response.status !== 201) {

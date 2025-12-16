@@ -24,7 +24,7 @@ const PastSession = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('/student/past-sessions');
+        const response = await axios.get('/student/past-sessions', { withCredentials: true });
         if (response.status === 200) {
           const allSessions = response.data.pastSessions || [];
           setSessions(allSessions);
@@ -60,7 +60,7 @@ const PastSession = () => {
       setSubmitting(true);
       await axios.post(`/student/rate-tutor/${selectedTutor._id}`, {
         rating: selectedRating,
-      });
+      }, { withCredentials: true });
       alert('Thank you for rating your tutor!');
       setShowRatingModal(false);
     } catch (err) {

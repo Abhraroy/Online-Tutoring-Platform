@@ -10,10 +10,30 @@ import userRoutes from "./Routes/UserRoutes.js";
 
 const app = express();
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map(origin => origin.trim())
+  : [];
+
+console.log("allowedOrigins", allowedOrigins);
+
 app.use(cors({
-    origin:process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+    
+        // Check if origin is in allowed list
+        if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+          // Return the exact origin (not *) when credentials are enabled
+          return callback(null, true);
+        }
+    
+        // Reject origin not in allowed list
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+      },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Type"],
 }));
 app.use(express.json());
 app.use(cookieParser());

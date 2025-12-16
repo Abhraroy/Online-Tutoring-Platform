@@ -11,7 +11,7 @@ function StudentProfile() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/student/logout');
+      const response = await axios.post('/student/logout', {}, { withCredentials: true });
       if (response.status === 200) {
         setLogin(false);
         setUser(null);

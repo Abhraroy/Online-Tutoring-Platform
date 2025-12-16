@@ -61,7 +61,7 @@ function EditSession() {
           sessionData = location.state.sessionData;
         } else if (sessionId) {
           // Otherwise fetch from API using sessionId from URL
-          const response = await axios.get('/tutor/sessions');
+          const response = await axios.get('/tutor/sessions', { withCredentials: true });
           const sessions = response.data.sessions || [];
           sessionData = sessions.find(s => s._id === sessionId);
         }
@@ -171,7 +171,7 @@ function EditSession() {
           status: formData.status || 'open'
         };
 
-        const response = await axios.put(`/tutor/sessions/${currentSessionId}`, payload);
+        const response = await axios.put(`/tutor/sessions/${currentSessionId}`, payload, { withCredentials: true });
         console.log('Session updated successfully:', response.data);
         
         // Redirect to session detail page after successful update

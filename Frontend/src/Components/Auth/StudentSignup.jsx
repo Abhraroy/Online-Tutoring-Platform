@@ -5,8 +5,8 @@ import useZustandStore from '../Context/ZustandStore';
 import { useAuth } from '../Context/AuthContext';
 
 const StudentSignup = () => {
-  const { login, setLogin } = useZustandStore();
-  const { user, loading, error } = useAuth();
+  const { login, setLogin ,user} = useZustandStore();
+  const {  loading, error } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const StudentSignup = () => {
           phone: formData.phone,
           agreeToTerms: formData.agreeToTerms
         }
-        const response = await axios.post("/student/register", payload);
+        const response = await axios.post("/student/register", payload, { withCredentials: true });
         console.log(response.data);
         if (response.status !== 201) {
           navigate("/login");

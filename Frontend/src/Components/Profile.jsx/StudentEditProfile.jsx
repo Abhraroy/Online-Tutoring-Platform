@@ -13,7 +13,7 @@ const StudentEditProfile = () => {
     if (!loading && user?.role === "student") {
       console.log("StudentEditProfile user",user);
       const fetchProfile = async () => {
-        const response = await axios.get("/student/profile");
+        const response = await axios.get("/student/profile", { withCredentials: true });
         if (response.status !== 200) {
           navigate("/student/profile");
         }
@@ -110,7 +110,7 @@ const StudentEditProfile = () => {
           subjects: formData.subjects,
           phone: formData.phone
         }
-        const response = await axios.put("/student/profile", payload);
+        const response = await axios.put("/student/profile", payload, { withCredentials: true });
         console.log(response.data);
         if (response.status !== 201) {
           navigate("/student/edit-profile");

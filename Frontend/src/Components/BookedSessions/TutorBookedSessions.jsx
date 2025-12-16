@@ -13,7 +13,7 @@ function TutorBookedSessions() {
       console.log("fetching booked sessions")
         const fetchBookedSessions = async ()=>{
            try{
-            const response = await axios.get('/tutor/booked-sessions')
+            const response = await axios.get('/tutor/booked-sessions', { withCredentials: true })
             console.log(response.data.bookedSessions)
             const sessions = response.data.bookedSessions || []
             setBookedSessions(sessions)
@@ -92,7 +92,7 @@ function TutorBookedSessions() {
       // Mark all bookings for this session as completed
       for (const booking of bookingsForSession) {
         if (!booking._id) continue
-        await axios.put(`/tutor/booked-sessions/${booking._id}`, { status: "completed" })
+        await axios.put(`/tutor/booked-sessions/${booking._id}`, { status: "completed" }, { withCredentials: true })
       }
 
       // Remove this session group from current view

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import useZustandStore from '../Context/ZustandStore';
 
@@ -8,11 +8,12 @@ const StudentLayout = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const profileRef = useRef(null);
   const { setLogin, setUser, setUserData } = useZustandStore();
 
   const handleLogout = async () => {
-    const response = await axios.post('/student/logout');
+    const response = await axios.post('/student/logout', {}, { withCredentials: true });
     if(response.status === 200){
       setLogin(false);
       setUser(null);
@@ -20,6 +21,18 @@ const StudentLayout = () => {
       navigate('/');
     }
   }
+
+  // Sync searchQuery with URL params
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q') || '';
+    if (location.pathname === '/search') {
+      setSearchQuery(q);
+    } else if (location.pathname !== '/search' && searchQuery) {
+      // Clear search query when navigating away from search page
+      setSearchQuery('');
+    }
+  }, [location]);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -37,7 +50,8 @@ const StudentLayout = () => {
     e.preventDefault();
     const q = searchQuery.trim();
     if (q) {
-      navigate(`/search?q=${encodeURIComponent(q)}`);
+      // Force navigation by using replace: false and ensuring different state
+      navigate(`/search?q=${encodeURIComponent(q)}`, { replace: false });
     }
   }
 
@@ -68,7 +82,7 @@ const StudentLayout = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tutors, subjects..."
+                    placeholder="Search sessions by subject..."
                     className="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 hover:border-gray-400"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -246,7 +260,7 @@ const StudentLayout = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search tutors, subjects..."
+                  placeholder="Search sessions by subject..."
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

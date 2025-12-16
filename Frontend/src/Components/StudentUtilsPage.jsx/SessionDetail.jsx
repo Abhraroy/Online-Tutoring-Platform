@@ -20,7 +20,7 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
     const fetchSession = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/student/session/${sessionId}`)
+        const response = await axios.get(`/student/session/${sessionId}`, { withCredentials: true })
         setSession(response.data.session)
       } catch (error) {
         console.error('Error fetching session:', error)
@@ -35,7 +35,7 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
     try {
       setBooking(true) 
       
-      const response = await axios.post(`/student/book/${sessionId}`)
+      const response = await axios.post(`/student/book/${sessionId}`, {}, { withCredentials: true })
       const emailResponse = await axios.post(`/student/send-email`,
          { to: session.tutorId.email, subject: "Your session has been booked",
           text: `Your session have been booked by a student.
@@ -43,16 +43,38 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
           Student Email: ${userData.email}
           Student Phone: ${userData.phone}
           Student Grade: ${userData.grade}
-          Student Subjects: ${userData.subjects.join(', ')}` });
+          Student Subjects: ${userData.subjects.join(', ')}` }, { withCredentials: true });
+      const studentEmailResponse = await axios.post(`/student/send-email`,
+         { to: userData.email, subject: "Your have booked a session",
+          text: `Your session have been booked by a student.
+          Session Topic: ${session.topic}
+          Session Date: ${session.date}
+          Session Time: ${session.time}
+          Session Duration: ${session.duration}
+          Session Grade: ${session.grade}
+          Session Fee: ${session.fee}
+          Tutor Name: ${session.tutorId.name}
+          Tutor Email: ${session.tutorId.email}
+          Tutor Phone: ${session.tutorId.phone}
+          Tutor Subjects: ${session.tutorId.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         alert(`Session booked successfully`);
-      } else {
-        alert(`Failed to book session or send email`);
-      }
+      } 
       console.log(response.data)
       navigate('/student-home')
     } catch (error) {
-      console.error('Error booking session:', error)
+      if (error.response.status === 409) {
+        alert(`Session already booked`);
+      } else {
+        console.error('Error booking session:', error)
+        alert(`Failed to book session or send email`);
+      }
+      if (error.response.status === 400) {
+        alert(`Failed to book session`);
+      }
+      if (error.response.status === 500) {
+        alert(`Internal server error`);
+      }
     } finally {
       setBooking(false)
     }

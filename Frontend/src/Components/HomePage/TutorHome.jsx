@@ -8,7 +8,7 @@ function TutorHome() {
   useEffect(()=>{
     const fetchsessions = async ()=>{
       try{
-        const response = await axios.get('/tutor/sessions');
+        const response = await axios.get('/tutor/sessions', { withCredentials: true });
         setSessions(response.data.sessions || []);
       }catch(error){
         console.log(error);

@@ -19,7 +19,7 @@ const FollowedTutor = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('/student/followed-tutors');
+        const response = await axios.get('/student/followed-tutors', { withCredentials: true });
         if (response.status === 200) {
           const raw = response.data.followedTutors || [];
           const mappedTutors = raw
@@ -40,7 +40,7 @@ const FollowedTutor = () => {
 
   const handleUnfollow = async (tutorId) => {
     try {
-      const response = await axios.post(`/student/unfollow/${tutorId}`);
+      const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         setTutors((prev) => prev.filter((tutor) => tutor._id !== tutorId));
       } else {

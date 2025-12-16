@@ -14,7 +14,7 @@ function TutorSessionDetail() {
       try {
         setLoading(true)
         // Fetch all tutor sessions and find the one matching sessionId
-        const response = await axios.get('/tutor/sessions')
+        const response = await axios.get('/tutor/sessions', { withCredentials: true })
         const sessions = response.data.sessions || []
         const foundSession = sessions.find(s => s._id === sessionId)
         setSession(foundSession || null)
@@ -122,7 +122,7 @@ function TutorSessionDetail() {
 
     try {
       setIsDeleting(true)
-      const response = await axios.delete(`/tutor/sessions/${sessionId}`)
+      const response = await axios.delete(`/tutor/sessions/${sessionId}`, { withCredentials: true })
       console.log('Session deleted successfully:', response.data)
       
       // Show success message and navigate back
