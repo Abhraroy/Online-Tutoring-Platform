@@ -29,7 +29,6 @@ const SearchResultPage = () => {
       return prevQuery;
     });
   }, [searchParams]);
-
   const getAverageRating = (tutor) => {
     if (!tutor || !Array.isArray(tutor.rating) || tutor.rating.length === 0) return null;
     const sum = tutor.rating.reduce((acc, val) => acc + (Number(val) || 0), 0);
@@ -37,7 +36,6 @@ const SearchResultPage = () => {
     if (!isFinite(avg) || avg <= 0) return null;
     return avg.toFixed(1);
   };
-
   // Debounce query changes by 200ms
   useEffect(() => {
     const trimmedQuery = query.trim();
@@ -52,7 +50,6 @@ const SearchResultPage = () => {
 
     return () => clearTimeout(handler);
   }, [query, setSearchParams, searchParams]);
-
   // Fetch results when debouncedQuery changes
   useEffect(() => {
     const fetchResults = async () => {
@@ -61,7 +58,6 @@ const SearchResultPage = () => {
         setError(null);
         return;
       }
-
       try {
         setLoading(true);
         setError(null);

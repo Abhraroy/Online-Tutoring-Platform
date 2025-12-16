@@ -46,8 +46,6 @@ function TutorHome() {
     return `${config.bg} ${config.text} ${config.border}`
   }
 
-
-
   return (
     <div className=' bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'>
       {/* Header Section */}
@@ -98,7 +96,6 @@ function TutorHome() {
               </div>
             </div>
           </div>
-          
           <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200'>
             <div className='flex items-center'>
               <div className='p-3 bg-green-100 rounded-lg'>
@@ -112,7 +109,6 @@ function TutorHome() {
               </div>
             </div>
           </div>
-          
           <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200'>
             <div className='flex items-center'>
               <div className='p-3 bg-yellow-100 rounded-lg'>
@@ -126,7 +122,6 @@ function TutorHome() {
               </div>
             </div>
           </div>
-          
           <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200'>
             <div className='flex items-center'>
               <div className='p-3 bg-purple-100 rounded-lg'>
@@ -148,7 +143,6 @@ function TutorHome() {
             <h2 className='text-xl font-semibold text-gray-900'>Your Sessions</h2>
             <p className='text-gray-600 text-sm mt-1'>Manage and track your tutoring sessions</p>
           </div>
-          
           <div className='p-6'>
             {sessions && sessions.length > 0 ? (
               <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
@@ -239,7 +233,6 @@ function TutorHome() {
                           </div>
                         </div>
                       </div>
-                      
                       {/* Card Footer */}
                       <div className='pt-4 border-t border-gray-100'>
                         <div className='flex gap-2'>

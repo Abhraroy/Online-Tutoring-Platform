@@ -13,15 +13,12 @@ function StudentHome() {
   const [loading, setLoading] = useState(true)
   const [loadingAllSessions, setLoadingAllSessions] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
-  
   // Get subjects from student profile
   const studentSubjects = userData?.subjects || []
   // Initialize selectedSubject to empty string so no filter is applied initially
   const [selectedSubject, setSelectedSubject] = useState('')
-
   // Only show student's subjects
   const allSubjects = studentSubjects
-
   // Filter states for Latest Sessions section
   const [filterSubject, setFilterSubject] = useState('')
   const [filterGrade, setFilterGrade] = useState('')
@@ -39,7 +36,6 @@ function StudentHome() {
     'College Freshman', 'College Sophomore', 'College Junior', 'College Senior',
     'Graduate', 'Adult'
   ]
-  
   // Update selectedSubject when studentSubjects change
   useEffect(() => {
     if (studentSubjects.length > 0 && !studentSubjects.includes(selectedSubject)) {
