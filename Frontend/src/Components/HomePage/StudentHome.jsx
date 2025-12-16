@@ -468,11 +468,11 @@ function StudentHome() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {displaySessions.map((s) => (
             <div 
               key={s._id} 
-              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-200 group overflow-hidden"
+              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-200 group overflow-hidden flex flex-col"
             >
               {/* Card Header */}
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b border-gray-100">
@@ -556,15 +556,15 @@ function StudentHome() {
                 </div>
 
                 {/* Card Footer */}
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div className="text-left">
+                <div className="pt-4 border-t border-gray-100 mt-auto">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-left flex-shrink-0">
                       <p className="text-xs text-gray-500 font-medium">Session Fee</p>
                       <p className="text-2xl font-bold text-indigo-600">${s.fee.toFixed(2)}</p>
                     </div>
                     <button
                       type="button"
-                      className="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm"
+                      className="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm flex-shrink-0"
                       onClick={() => navigate(`/session-detail/${s._id}`)}
                     >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -801,11 +801,11 @@ function StudentHome() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredSessions.map((s) => (
                 <div 
                   key={s._id} 
-                  className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-200 group overflow-hidden"
+                  className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-200 group overflow-hidden flex flex-col"
                 >
                   {/* Card Header */}
                   <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b border-gray-100">
@@ -889,15 +889,15 @@ function StudentHome() {
                     </div>
 
                     {/* Card Footer */}
-                    <div className="mt-6 pt-4 border-t border-gray-100">
-                      <div className="flex items-center justify-between">
-                        <div className="text-left">
+                    <div className="pt-4 border-t border-gray-100 mt-auto">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="text-left flex-shrink-0">
                           <p className="text-xs text-gray-500 font-medium">Session Fee</p>
                           <p className="text-2xl font-bold text-indigo-600">${s.fee.toFixed(2)}</p>
                         </div>
                         <button
                           type="button"
-                          className="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm"
+                          className="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors shadow-sm flex-shrink-0"
                           onClick={() => navigate(`/session-detail/${s._id}`)}
                         >
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

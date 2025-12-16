@@ -1,16 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 
 const SearchResultPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
+  const isInternalUpdate = useRef(false);
 
   const [query, setQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Sync query state with URL params when they change externally (e.g., from navbar search)
+  useEffect(() => {
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
+    }
+    const urlQuery = searchParams.get('q') || '';
+    setQuery(prevQuery => {
+      if (urlQuery !== prevQuery) {
+        // Update debounced query immediately for external URL changes
+        setDebouncedQuery(urlQuery);
+        return urlQuery;
+      }
+      return prevQuery;
+    });
+  }, [searchParams]);
 
   const getAverageRating = (tutor) => {
     if (!tutor || !Array.isArray(tutor.rating) || tutor.rating.length === 0) return null;
@@ -22,13 +40,18 @@ const SearchResultPage = () => {
 
   // Debounce query changes by 200ms
   useEffect(() => {
+    const trimmedQuery = query.trim();
     const handler = setTimeout(() => {
-      setDebouncedQuery(query.trim());
-      setSearchParams(query.trim() ? { q: query.trim() } : {});
+      const currentUrlQuery = searchParams.get('q') || '';
+      if (trimmedQuery !== currentUrlQuery) {
+        isInternalUpdate.current = true;
+        setSearchParams(trimmedQuery ? { q: trimmedQuery } : {});
+      }
+      setDebouncedQuery(trimmedQuery);
     }, 200);
 
     return () => clearTimeout(handler);
-  }, [query, setSearchParams]);
+  }, [query, setSearchParams, searchParams]);
 
   // Fetch results when debouncedQuery changes
   useEffect(() => {
