@@ -54,8 +54,6 @@ export const registerStudent = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-
-
     res.cookie("token", sttoken, {
       httpOnly: true,
       sameSite: sameSite,
@@ -158,12 +156,10 @@ export const bookSession = async (req, res) => {
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }
-    
     // Check if session has available slots
     if (session.availableSlots <= 0) {
       return res.status(400).json({ message: "Session is fully booked" });
     }
-    
     // Check if student already booked this session
     const existingBooking = await BookingModel.findOne({
       sessionId,
@@ -184,12 +180,10 @@ export const bookSession = async (req, res) => {
 
     // Decrement available slots
     session.availableSlots -= 1;
-    
     // Only mark as "booked" when all slots are filled
     if (session.availableSlots === 0) {
       session.status = "booked";
     }
-    
     await session.save();
 
     res
@@ -229,7 +223,6 @@ export const getSessions = async (req, res) => {
     // Filter by available slots > 0 instead of just status === "pending"
     // This allows sessions with available slots to show even if some students have booked
     filter.availableSlots = { $gt: 0 };
-    
     // Always filter to only show future sessions
     const now = new Date();
     filter.date = { $gte: now };
@@ -297,8 +290,6 @@ export const logoutStudent = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
-
-
 export const getSessionById = async (req, res) => {
   try {
     const {sessionId} = req.params;
@@ -311,8 +302,6 @@ export const getSessionById = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
-
-
 export const deleteBookedSession = async (req, res) => {
   try {
     const {sessionId} = req.params;
@@ -331,7 +320,6 @@ export const deleteBookedSession = async (req, res) => {
     session.availableSlots += 1;
     console.log(session.availableSlots)
     // If slots become available, change status back to "pending"
-    
     await session.save();
     res.status(200).json({message: "Session deleted successfully"});
   } catch (error) {
@@ -355,8 +343,6 @@ export const getStudentProfile = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
-
-
 export const getAllTutors = async(req,res) =>{
   try{
     const role = req.role;
@@ -402,8 +388,6 @@ export const hireTutor = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
-
-
 export const followTutor = async (req, res) => {
   try {
     const { tutorId } = req.params;
@@ -455,8 +439,6 @@ export const getFollowedTutors = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
-
-
 export const pastSessions = async (req, res) => {
   try {
     const studentId = req.userId;
@@ -475,8 +457,6 @@ export const pastSessions = async (req, res) => {
     res.status(500).json({message: error.message});
   }
 }
-
-
 export const rateTutor = async (req, res) => {
   try {
     const { tutorId } = req.params;
@@ -550,8 +530,6 @@ export const searchUsersAndTutors = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
-
-
 export const sendEmail = async (req, res) => {
   try {
     const { to, subject, text } = req.body;

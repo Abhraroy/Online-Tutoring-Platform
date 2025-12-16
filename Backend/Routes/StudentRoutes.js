@@ -3,8 +3,6 @@ import { registerStudent, loginStudent, bookSession, getSessions, getBookedSessi
 import { authMiddleware } from "../Middleware/AuthMiddleware.js";
 
 const router = Router();
-
-
 router.post("/register", registerStudent);
 router.post("/login", loginStudent);
 router.post("/logout", authMiddleware("student"), logoutStudent);
