@@ -171,7 +171,7 @@ export const bookSession = async (req, res) => {
       status: "pending",
     });
     if (existingBooking) {
-      return res.status(400).json({ message: "Session already booked" });
+      return res.status(409).json({ message: "Session already booked" });
     }
 
     // Create the booking
@@ -390,9 +390,15 @@ export const hireTutor = async (req, res) => {
     if (!student) {
       return res.status(404).json({message: "Student not found"});
     }
+    const existingHiring = await HiringModel.findOne({ tutorId, studentId });
+    if (existingHiring) {
+      return res.status(409).json({ message: "Tutor already hired" });
+    }
+
     const hiring = await HiringModel.create({ tutorId, studentId });
     res.status(200).json({message: "Tutor hired successfully", hiring});
   } catch (error) {
+    console.log("Error hiring tutor", error);
     res.status(500).json({message: error.message});
   }
 }

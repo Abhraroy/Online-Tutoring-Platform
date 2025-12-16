@@ -16,8 +16,8 @@ function StudentHome() {
   
   // Get subjects from student profile
   const studentSubjects = userData?.subjects || []
-  // Initialize selectedSubject to first subject if available
-  const [selectedSubject, setSelectedSubject] = useState(studentSubjects.length > 0 ? studentSubjects[0] : '')
+  // Initialize selectedSubject to empty string so no filter is applied initially
+  const [selectedSubject, setSelectedSubject] = useState('')
 
   // Only show student's subjects
   const allSubjects = studentSubjects
