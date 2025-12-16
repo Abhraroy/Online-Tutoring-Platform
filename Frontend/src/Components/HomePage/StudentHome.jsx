@@ -205,8 +205,6 @@ function StudentHome() {
     setCurrentSlide((prev) => (prev + 1) % carouselSlides.length)
   }
 
-
-
   const formatDateTime = (iso) => {
     try {
       return new Date(iso).toLocaleString(undefined, {
@@ -253,8 +251,6 @@ function StudentHome() {
       </div>
     )
   }
-
- 
 
   return (
     <div className="bg-gray-50">

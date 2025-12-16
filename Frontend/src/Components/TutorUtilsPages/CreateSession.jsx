@@ -46,7 +46,6 @@ function CreateSession() {
     { value: 'closed', label: 'Closed', description: 'Session is closed and not accepting bookings' },
   ];
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({

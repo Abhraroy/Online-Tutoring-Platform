@@ -37,14 +37,6 @@ const StudentEditProfile = () => {
     }
   }, [loading, user, navigate, error]);
 
-
-
-
-
-
-
-
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',

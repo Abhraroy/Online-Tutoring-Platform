@@ -250,18 +250,30 @@ export const updateTutorSession = async (req, res) => {
       availableSlots,
       status,
     } = req.body;
-    const session = await SessionModel.findByIdAndUpdate(sessionId, {
-      tutorId,
-      subject,
-      date,
-      duration,
-      fee,
-      topic,
-      grade,
-      availableSlots,
-      status: status || "open",
-    });
-    await session.save();
+    // First check if session exists and belongs to this tutor
+    const existingSession = await SessionModel.findById(sessionId);
+    if (!existingSession) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+    if (existingSession.tutorId.toString() !== tutorId.toString()) {
+      return res.status(403).json({ message: "Forbidden: You can only update your own sessions" });
+    }
+    // Update the session and return the updated document
+    const session = await SessionModel.findByIdAndUpdate(
+      sessionId,
+      {
+        tutorId,
+        subject,
+        date,
+        duration,
+        fee,
+        topic,
+        grade,
+        availableSlots,
+        status: status || "open",
+      },
+      { new: true }
+    );
     if (!session) {
       return res.status(400).json({ message: "Session not updated" });
     }
