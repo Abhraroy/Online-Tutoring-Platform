@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
+import { toast } from 'react-toastify';
 function FindTutor() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +39,7 @@ function FindTutor() {
     fetchTutors();
   }, []);
 
-  const handleFollow = async (tutorId) => {
+  const handleFollow = async (tutorId, tutorName) => {
     try {
       const response = await axios.post(`/student/follow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
@@ -48,25 +49,25 @@ function FindTutor() {
           return newSet;
         });
       } else {
-        alert(`Failed to follow tutor ${tutor.name}`);
+        toast.error(`Failed to follow tutor ${tutorName}`);
       }
     } catch (error) {
       console.error('Error following tutor:', error);
-      alert(`Failed to follow tutor ${tutor.name}`);
+      toast.error(`Failed to follow tutor ${tutorName}`);
     }
   };
 
-  const handleUnfollow = async (tutorId) => {
+  const handleUnfollow = async (tutorId, tutorName) => {
     try {
       const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
-        alert(`Tutor ${tutor.name} unfollowed successfully`);
+        toast.success(`Tutor ${tutorName} unfollowed successfully`);
       } else {
-        alert(`Failed to unfollow tutor ${tutor.name}`);
+        toast.error(`Failed to unfollow tutor ${tutorName}`);
       }
     } catch (error) {
       console.error('Error unfollowing tutor:', error);
-      alert(`Failed to unfollow tutor ${tutor.name}`);
+      toast.error(`Failed to unfollow tutor ${tutorName}`);
     }
   };
 
@@ -94,17 +95,17 @@ function FindTutor() {
           Tutor Phone: ${tutor.phone}
           Tutor Subjects: ${tutor.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
-        alert(`Tutor ${tutor.name} hired successfully`);
+        toast.success(`Tutor ${tutor.name} hired successfully`);
       } else if (response.status === 409) {
-        alert(`Failed to hire tutor ${tutor.name} or send email`);
+        toast.error(`Failed to hire tutor ${tutor.name} or send email`);
       }
     } catch (error) {
-      if (error.response.status === 409) {
-        alert(`Tutor already hired`);
-        } else {
-          alert(`Failed to hire tutor ${tutor.name} or send email`);
-        }
-        console.error('Error hiring tutor:', error);
+      if (error.response?.status === 409) {
+        toast.info('Tutor already hired');
+      } else {
+        toast.error(`Failed to hire tutor ${tutor.name} or send email`);
+      }
+      console.error('Error hiring tutor:', error);
     }
   };
 
@@ -156,11 +157,11 @@ function FindTutor() {
             <p className="text-gray-600">There are currently no tutors available.</p>
           </div>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x md:snap-none snap-mandatory">
             {tutors.map((tutor) => (
               <div
                 key={tutor._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] snap-start"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start"
               >
                 {/* Tutor Header */}
                 <div className="mb-4">
@@ -279,7 +280,7 @@ function FindTutor() {
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4 border-t border-gray-100">
                   <button
-                    onClick={() => handleFollow(tutor._id)}
+                    onClick={() => handleFollow(tutor._id, tutor.name)}
                     className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${followedTutors.has(tutor._id)
                       ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

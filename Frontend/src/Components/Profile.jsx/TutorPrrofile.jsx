@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import useZustandStore from '../Context/ZustandStore';
+import { toast } from 'react-toastify';
 
 function TutorProfile() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function TutorProfile() {
       }
     } catch (error) {
       console.error('Error logging out:', error);
-      alert('Failed to logout. Please try again.');
+      toast.error('Failed to logout. Please try again.');
     }
   };
 

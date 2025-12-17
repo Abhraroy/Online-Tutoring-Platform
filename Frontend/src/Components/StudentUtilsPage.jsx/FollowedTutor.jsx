@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const FollowedTutor = () => {
   const [tutors, setTutors] = useState([]);
@@ -43,12 +44,13 @@ const FollowedTutor = () => {
       const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
         setTutors((prev) => prev.filter((tutor) => tutor._id !== tutorId));
+        toast.success('Tutor unfollowed successfully.');
       } else {
-        alert('Failed to unfollow tutor. Please try again.');
+        toast.error('Failed to unfollow tutor. Please try again.');
       }
     } catch (err) {
       console.error('Error unfollowing tutor:', err);
-      alert('Failed to unfollow tutor. Please try again.');
+      toast.error('Failed to unfollow tutor. Please try again.');
     }
   };
 

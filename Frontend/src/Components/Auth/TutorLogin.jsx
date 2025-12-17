@@ -3,6 +3,7 @@ import { Link,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useZustandStore from '../Context/ZustandStore';
 import { useAuth } from '../Context/AuthContext';
+import { toast } from 'react-toastify';
 const TutorLogin = () => {
   const {login,setLogin} = useZustandStore();
   const navigate = useNavigate();
@@ -45,15 +46,16 @@ const TutorLogin = () => {
         console.log("Tutor login response",response.data);
         setLogin(true);
         if(response.status !== 201){
-            alert("Tutor login failed");
-            navigate("/tutor-login");
-        }
-        else{
+          toast.error("Tutor login failed");
+          navigate("/tutor-login");
+        } else {
           setLogin(false);
+          toast.success("Tutor logged in successfully");
           navigate("/tutor-home",{replace:true});
         }
       }catch(error){
         console.log("Tutor login error",error);
+        toast.error("Tutor login failed");
       }
     }
   };
