@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import useZustandStore from '../Context/ZustandStore';
 import { useAuth } from '../Context/AuthContext';
 const TutorSignup = () => {
@@ -86,9 +87,9 @@ const TutorSignup = () => {
       newValue = newValue.replace(/[^a-zA-Z\s]/g, '');
     }
 
-    // Restrict phone to digits only
+    // Restrict phone to digits only and max 10 digits
     if (name === 'phone') {
-      newValue = newValue.replace(/\D/g, '');
+      newValue = newValue.replace(/\D/g, '').slice(0, 10);
     }
 
     setFormData(prev => ({
@@ -168,7 +169,17 @@ const TutorSignup = () => {
         }
       } catch (error) {
         console.error('Registration error:', error.response?.data || error.message);
-        // Handle error (show error message to user)
+        // Show toast notification if account already exists
+        if (error.response?.data?.message) {
+          const errorMessage = error.response.data.message;
+          if (errorMessage.includes('Email already exists') || errorMessage.includes('already exists')) {
+            toast.error(errorMessage || 'Account already exists. Please try logging in.');
+          } else {
+            toast.error(errorMessage || 'Registration failed. Please try again.');
+          }
+        } else {
+          toast.error('Registration failed. Please try again.');
+        }
       }
     }
   };
@@ -247,6 +258,7 @@ const TutorSignup = () => {
                         autoComplete="tel"
                         value={formData.phone}
                         onChange={handleChange}
+                        maxLength={10}
                         className="appearance-none block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-20 focus:border-indigo-500 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5"
                         placeholder="9876543210"
                       />
