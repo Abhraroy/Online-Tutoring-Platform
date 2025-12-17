@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 function FindTutor() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,6 +10,7 @@ function FindTutor() {
   const [followedTutors, setFollowedTutors] = useState(new Set());
   const [student, setStudent] = useState(null);
   const studentData = useAuth().userData;
+  const navigate = useNavigate();
   useEffect(() => {
     setStudent(studentData);
   }, [studentData]);
@@ -109,6 +111,16 @@ function FindTutor() {
     }
   };
 
+  const handleViewDetail = (tutor) => {
+    if (!tutor?._id) return;
+    navigate(`/tutor-detail/${tutor._id}`, {
+      state: {
+        tutor,
+        fromFindTutors: true
+      }
+    });
+  };
+
   if (loading) {
     return (
       <div className="w-full bg-gray-50 flex items-center justify-center py-32">
@@ -161,13 +173,14 @@ function FindTutor() {
             {tutors.map((tutor) => (
               <div
                 key={tutor._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start cursor-pointer group"
+                onClick={() => handleViewDetail(tutor)}
               >
                 {/* Tutor Header */}
                 <div className="mb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-indigo-700 transition-colors">
                         {tutor.name}
                       </h3>
                       <p className="text-sm text-gray-500">{tutor.email}</p>
@@ -265,14 +278,14 @@ function FindTutor() {
                           <p className="text-sm text-gray-700">{tutor.experience}</p>
                         </div>
                       )}
-                      {tutor.certifications && (
-                        <div className="flex items-start gap-2">
-                          <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                          </svg>
-                          <p className="text-sm text-gray-700">{tutor.certifications}</p>
-                        </div>
-                      )}
+                      <div className="flex items-start gap-2">
+                        <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                        <p className="text-sm text-gray-700">
+                          {tutor.certifications || 'No certifications'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
