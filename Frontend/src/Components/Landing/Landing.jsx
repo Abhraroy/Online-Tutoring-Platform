@@ -345,7 +345,7 @@ const LandingPage = () => {
                 role: "Student",
                 content: "TutorConnect has completely transformed my learning experience. The tutors are knowledgeable and the platform is so easy to use!",
                 rating: 5,
-                avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
+                avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80"
               },
               {
                 name: "Michael Chen",

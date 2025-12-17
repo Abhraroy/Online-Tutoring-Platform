@@ -79,9 +79,21 @@ const TutorSignup = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = type === 'checkbox' ? checked : value;
+
+    // Restrict name to alphabets and spaces only
+    if (name === 'name') {
+      newValue = newValue.replace(/[^a-zA-Z\s]/g, '');
+    }
+
+    // Restrict phone to digits only
+    if (name === 'phone') {
+      newValue = newValue.replace(/\D/g, '');
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newValue
     }));
   };
 
@@ -98,12 +110,14 @@ const TutorSignup = () => {
     const newErrors = {};
 
     if (!formData.name.trim()) newErrors.name = 'Name is required';
+    else if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) newErrors.name = 'Name can only contain letters and spaces';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    else if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = 'Please enter a valid 10-digit Indian mobile number';
     if (formData.subjects.length === 0) newErrors.subjects = 'Please select at least one subject';
     if (!formData.experience) newErrors.experience = 'Please select your experience level';
     if (!formData.education) newErrors.education = 'Please select your education level';
@@ -160,23 +174,19 @@ const TutorSignup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-600 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center animate-gradient-xy relative overflow-hidden">
-
-      {/* Background decoration circles */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden">
 
       <div className="max-w-7xl w-full space-y-8 relative z-10">
         <div className="text-center transform transition-all duration-500 hover:scale-105">
-          <h2 className="mt-6 text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-200 tracking-tight drop-shadow-sm">
+          <h2 className="mt-6 text-5xl font-extrabold text-slate-900 tracking-tight">
             Join as a Tutor
           </h2>
-          <p className="mt-2 text-lg text-indigo-100 font-medium">
+          <p className="mt-2 text-lg text-slate-600 font-medium">
             Share your knowledge and help students succeed.
           </p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-xl py-8 px-4 shadow-[0_20px_50px_rgba(79,_70,_229,_0.6)] sm:rounded-3xl sm:px-10 border border-white/50 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(79,_70,_229,_0.8)]">
+        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-3xl sm:px-10 border border-slate-200 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
           <form className="space-y-8" onSubmit={handleSubmit}>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -226,8 +236,8 @@ const TutorSignup = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 ml-1">
-                      Phone Number
+                  <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 ml-1">
+                    Phone Number (India)
                     </label>
                     <div className="mt-1">
                       <input
@@ -238,7 +248,7 @@ const TutorSignup = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="appearance-none block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-20 focus:border-indigo-500 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5"
-                        placeholder="+1 (555) 987-6543"
+                        placeholder="9876543210"
                       />
                     </div>
                     {errors.phone && <p className="mt-1 text-sm text-red-600 animate-pulse">{errors.phone}</p>}
