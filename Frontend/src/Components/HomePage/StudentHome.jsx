@@ -92,31 +92,31 @@ function StudentHome() {
     return null
   }
 
-  // Carousel slides data - Replace colored divs with images later
+  // Carousel slides data with images
   const carouselSlides = [
     {
       id: 1,
-      color: 'bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500',
-      title: 'Learn from Expert Tutors',
-      description: 'Discover personalized learning experiences tailored to your needs'
+      imageUrl: 'https://pub-2ac4ad228778479f820461eb6be10ade.r2.dev/WhatsApp%20Image%202025-12-17%20at%2018.03.47%20(1).jpeg',
+      title: 'Personalized 1‑on‑1 Online Tutoring',
+      description: 'Connect with expert tutors for live, interactive sessions tailored to your learning style.'
     },
     {
       id: 2,
-      color: 'bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500',
-      title: 'Expert Tutors',
-      description: 'Learn from the best in the industry'
+      imageUrl: 'https://pub-2ac4ad228778479f820461eb6be10ade.r2.dev/WhatsApp%20Image%202025-12-17%20at%2018.03.47%20(2).jpeg',
+      title: 'Master Every Subject With Confidence',
+      description: 'From Maths and Science to Languages and Exam Prep, get focused help exactly where you need it.'
     },
     {
       id: 3,
-      color: 'bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500',
-      title: 'Flexible Learning',
-      description: 'Study at your own pace and schedule'
+      imageUrl: 'https://pub-2ac4ad228778479f820461eb6be10ade.r2.dev/WhatsApp%20Image%202025-12-17%20at%2018.03.47.jpeg',
+      title: 'Flexible Schedules. Real Results.',
+      description: 'Book sessions that fit your routine and learn at your own pace from anywhere in the world.'
     },
     {
       id: 4,
-      color: 'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500',
-      title: 'Interactive Sessions',
-      description: 'Engage and learn together with interactive sessions'
+      imageUrl: 'https://pub-2ac4ad228778479f820461eb6be10ade.r2.dev/WhatsApp%20Image%202025-12-17%20at%2018.03.48.jpeg',
+      title: 'Interactive, Engaging Learning Experience',
+      description: 'Join dynamic sessions with whiteboards, quizzes, and live feedback to keep you motivated.'
     }
   ]
 
@@ -255,8 +255,11 @@ function StudentHome() {
   return (
     <div className="bg-gray-50">
       {/* Hero Carousel Section - Full Width */}
-      <div className="relative w-full mb-8 overflow-hidden" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)' }}>
-        <div className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full">
+      <div
+        className="relative w-full mb-8 overflow-hidden"
+        style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)' }}
+      >
+        <div className="relative h-[260px] sm:h-[320px] md:h-[420px] lg:h-[520px] xl:h-[620px] w-full">
           {/* Carousel Slides */}
           {carouselSlides.map((slide, index) => (
             <div
@@ -265,30 +268,27 @@ function StudentHome() {
                 index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
             >
-              {/* Placeholder colored div - Replace with <img> tag later */}
-              <div className={`w-full h-full ${slide.color} relative`}>
-                {/* Overlay for better text readability */}
-                <div className="absolute inset-0 bg-black/20"></div>
-                
+              <div className="w-full h-full relative">
+                <img
+                  src={slide.imageUrl}
+                  alt={slide.title}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/40 md:bg-black/30"></div>
+
                 {/* Content */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white px-6 z-10 max-w-4xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg animate-fade-in">
+                  <div className="text-center text-white px-4 sm:px-6 md:px-8 z-10 max-w-4xl mx-auto">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 drop-shadow-lg">
                       {slide.title}
                     </h2>
-                    <p className="text-xl md:text-2xl lg:text-3xl text-white/90 max-w-2xl mx-auto drop-shadow-md">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-2xl text-white/90 max-w-2xl mx-auto drop-shadow-md">
                       {slide.description}
                     </p>
                   </div>
                 </div>
-                
-                {/* Replace the above div with image when ready:
-                <img 
-                  src={`/path-to-image-${slide.id}.jpg`} 
-                  alt={slide.title} 
-                  className="w-full h-full object-cover" 
-                />
-                */}
               </div>
             </div>
           ))}

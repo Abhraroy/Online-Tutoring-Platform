@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useZustandStore from '../Context/ZustandStore';
 import { useAuth } from '../Context/AuthContext';
+import { toast } from 'react-toastify';
 const StudentLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -61,18 +62,19 @@ const StudentLogin = () => {
       const response = await axios.post("/student/login", payload, { withCredentials: true });
       console.log("Student login response",response.data);
       if(response.status !== 201){
-        alert("Student login failed");
+        toast.error("Student login failed");
         navigate("/");
       }
       else{
         // Set login first, then let AuthContext fetch the user data
         // Don't manually set user/userData here as AuthContext will handle it
         setLogin(true);
+        toast.success("Student logged in successfully");
         // Navigate after a brief delay to allow AuthContext to update
       }
     }catch(error){
       console.log("Student login error",error);
-      alert("Student login failed");
+      toast.error("Student login failed");
       navigate("/");
     }
     }

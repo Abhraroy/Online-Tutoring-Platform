@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 function FindTutor() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,6 +10,7 @@ function FindTutor() {
   const [followedTutors, setFollowedTutors] = useState(new Set());
   const [student, setStudent] = useState(null);
   const studentData = useAuth().userData;
+  const navigate = useNavigate();
   useEffect(() => {
     setStudent(studentData);
   }, [studentData]);
@@ -38,7 +41,7 @@ function FindTutor() {
     fetchTutors();
   }, []);
 
-  const handleFollow = async (tutorId) => {
+  const handleFollow = async (tutorId, tutorName) => {
     try {
       const response = await axios.post(`/student/follow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
@@ -48,25 +51,25 @@ function FindTutor() {
           return newSet;
         });
       } else {
-        alert(`Failed to follow tutor ${tutor.name}`);
+        toast.error(`Failed to follow tutor ${tutorName}`);
       }
     } catch (error) {
       console.error('Error following tutor:', error);
-      alert(`Failed to follow tutor ${tutor.name}`);
+      toast.error(`Failed to follow tutor ${tutorName}`);
     }
   };
 
-  const handleUnfollow = async (tutorId) => {
+  const handleUnfollow = async (tutorId, tutorName) => {
     try {
       const response = await axios.post(`/student/unfollow/${tutorId}`, {}, { withCredentials: true });
       if (response.status === 200) {
-        alert(`Tutor ${tutor.name} unfollowed successfully`);
+        toast.success(`Tutor ${tutorName} unfollowed successfully`);
       } else {
-        alert(`Failed to unfollow tutor ${tutor.name}`);
+        toast.error(`Failed to unfollow tutor ${tutorName}`);
       }
     } catch (error) {
       console.error('Error unfollowing tutor:', error);
-      alert(`Failed to unfollow tutor ${tutor.name}`);
+      toast.error(`Failed to unfollow tutor ${tutorName}`);
     }
   };
 
@@ -94,18 +97,28 @@ function FindTutor() {
           Tutor Phone: ${tutor.phone}
           Tutor Subjects: ${tutor.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
-        alert(`Tutor ${tutor.name} hired successfully`);
+        toast.success(`Tutor ${tutor.name} hired successfully`);
       } else if (response.status === 409) {
-        alert(`Failed to hire tutor ${tutor.name} or send email`);
+        toast.error(`Failed to hire tutor ${tutor.name} or send email`);
       }
     } catch (error) {
-      if (error.response.status === 409) {
-        alert(`Tutor already hired`);
-        } else {
-          alert(`Failed to hire tutor ${tutor.name} or send email`);
-        }
-        console.error('Error hiring tutor:', error);
+      if (error.response?.status === 409) {
+        toast.info('Tutor already hired');
+      } else {
+        toast.error(`Failed to hire tutor ${tutor.name} or send email`);
+      }
+      console.error('Error hiring tutor:', error);
     }
+  };
+
+  const handleViewDetail = (tutor) => {
+    if (!tutor?._id) return;
+    navigate(`/tutor-detail/${tutor._id}`, {
+      state: {
+        tutor,
+        fromFindTutors: true
+      }
+    });
   };
 
   if (loading) {
@@ -156,17 +169,18 @@ function FindTutor() {
             <p className="text-gray-600">There are currently no tutors available.</p>
           </div>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 snap-x md:snap-none snap-mandatory">
             {tutors.map((tutor) => (
               <div
                 key={tutor._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] snap-start"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start cursor-pointer group"
+                onClick={() => handleViewDetail(tutor)}
               >
                 {/* Tutor Header */}
                 <div className="mb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-indigo-700 transition-colors">
                         {tutor.name}
                       </h3>
                       <p className="text-sm text-gray-500">{tutor.email}</p>
@@ -264,14 +278,14 @@ function FindTutor() {
                           <p className="text-sm text-gray-700">{tutor.experience}</p>
                         </div>
                       )}
-                      {tutor.certifications && (
-                        <div className="flex items-start gap-2">
-                          <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                          </svg>
-                          <p className="text-sm text-gray-700">{tutor.certifications}</p>
-                        </div>
-                      )}
+                      <div className="flex items-start gap-2">
+                        <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                        <p className="text-sm text-gray-700">
+                          {tutor.certifications || 'No certifications'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -279,7 +293,7 @@ function FindTutor() {
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4 border-t border-gray-100">
                   <button
-                    onClick={() => handleFollow(tutor._id)}
+                    onClick={() => handleFollow(tutor._id, tutor.name)}
                     className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${followedTutors.has(tutor._id)
                       ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import useZustandStore from '../Context/ZustandStore';
+import { toast } from 'react-toastify';
 
 function StudentProfile() {
   const navigate = useNavigate();
@@ -17,10 +18,11 @@ function StudentProfile() {
         setUser(null);
         setUserData(null);
         navigate('/');
+        toast.success('Logged out successfully.');
       }
     } catch (error) {
       console.error('Error logging out:', error);
-      alert('Failed to logout. Please try again.');
+      toast.error('Failed to logout. Please try again.');
     }
   };
 

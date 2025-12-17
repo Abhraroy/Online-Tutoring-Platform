@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 function TutorBookedSessions() {
     const [bookedSessions,setBookedSessions] = useState([])
@@ -104,10 +105,10 @@ function TutorBookedSessions() {
         return sid !== sessionId
       }))
 
-      alert('Session marked as completed. You can now view it under Past Sessions.')
+      toast.success('Session marked as completed. You can now view it under Past Sessions.')
     } catch (error) {
       console.error('Error marking session as completed:', error)
-      alert('Failed to mark session as completed. Please try again.')
+      toast.error('Failed to mark session as completed. Please try again.')
     }
   }
 

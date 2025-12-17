@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../Context/AuthContext';
+import { toast } from 'react-toastify';
 function SessionDetail({ showBookButton: propShowBookButton = true }) {
   const { userData } = useAuth();
   const navigate = useNavigate()
@@ -58,22 +59,20 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
           Tutor Phone: ${session.tutorId.phone}
           Tutor Subjects: ${session.tutorId.subjects.join(', ')}` }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
-        alert(`Session booked successfully`);
+        toast.success('Session booked successfully');
       } 
       console.log(response.data)
       navigate('/student-home')
     } catch (error) {
-      if (error.response.status === 409) {
-        alert(`Session already booked`);
+      if (error.response?.status === 409) {
+        toast.info('Session already booked');
+      } else if (error.response?.status === 400) {
+        toast.error('Failed to book session');
+      } else if (error.response?.status === 500) {
+        toast.error('Internal server error');
       } else {
         console.error('Error booking session:', error)
-        alert(`Failed to book session or send email`);
-      }
-      if (error.response.status === 400) {
-        alert(`Failed to book session`);
-      }
-      if (error.response.status === 500) {
-        alert(`Internal server error`);
+        toast.error('Failed to book session or send email');
       }
     } finally {
       setBooking(false)

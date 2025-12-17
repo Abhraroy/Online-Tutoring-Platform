@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const PastSession = () => {
   const [sessions, setSessions] = useState([]);
@@ -61,11 +62,11 @@ const PastSession = () => {
       await axios.post(`/student/rate-tutor/${selectedTutor._id}`, {
         rating: selectedRating,
       }, { withCredentials: true });
-      alert('Thank you for rating your tutor!');
+      toast.success('Thank you for rating your tutor!');
       setShowRatingModal(false);
     } catch (err) {
       console.error('Error submitting rating:', err);
-      alert('Failed to submit rating. Please try again.');
+      toast.error('Failed to submit rating. Please try again.');
     } finally {
       setSubmitting(false);
     }

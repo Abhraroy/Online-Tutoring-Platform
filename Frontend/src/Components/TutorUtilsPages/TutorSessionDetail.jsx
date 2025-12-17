@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { toast } from 'react-toastify'
 
 function TutorSessionDetail() {
   const navigate = useNavigate()
@@ -126,11 +127,11 @@ function TutorSessionDetail() {
       console.log('Session deleted successfully:', response.data)
       
       // Show success message and navigate back
-      alert('Session deleted successfully!')
+      toast.success('Session deleted successfully!')
       navigate('/tutor-home')
     } catch (error) {
       console.error('Error deleting session:', error)
-      alert(error.response?.data?.message || 'Failed to delete session. Please try again.')
+      toast.error(error.response?.data?.message || 'Failed to delete session. Please try again.')
     } finally {
       setIsDeleting(false)
     }
