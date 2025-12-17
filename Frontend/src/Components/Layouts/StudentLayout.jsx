@@ -341,12 +341,10 @@ const StudentLayout = () => {
           </div>
         </div>
       </header>
-
       {/* Content */}
       <main className="w-[100vw] flex justify-center items-start p-2 sm:p-4 gap-2 sm:gap-4 bg-gray-50 flex-1">
         <Outlet />
       </main>
-
       {/* Footer */}
       <footer className="w-full border-t border-gray-200 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-gray-500">

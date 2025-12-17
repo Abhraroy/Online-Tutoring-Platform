@@ -51,8 +51,7 @@ function App() {
         <Route path="/support" element={<Support />} />
 
          { /* studentRoutes */ }
-        
-        
+
        <Route element={<StudentLayout />} >
             <Route path="/student-home" element={
             <ProtectedRoute role="student">
@@ -150,14 +149,7 @@ function App() {
             } />
         </Route>
 
-
-
-
-
       </Routes>
-
-
-
 
     </Router>
   )

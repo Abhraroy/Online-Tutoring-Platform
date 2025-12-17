@@ -2,8 +2,6 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-
-
 let emailTransporter = null;
 if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
     emailTransporter = nodemailer.createTransport({

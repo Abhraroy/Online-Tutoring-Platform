@@ -24,7 +24,6 @@ const LandingPage = () => {
                 TutorConnect
               </span>
             </Link>
-            
             <nav className="hidden md:flex items-center gap-8">
               <a 
                 href="#features" 
@@ -51,7 +50,6 @@ const LandingPage = () => {
                 Contact
               </a>
             </nav>
-            
             <button 
               className="md:hidden p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -159,7 +157,6 @@ const LandingPage = () => {
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
-              
               <button 
                 onClick={() => navigate("/tutor-signup")}
                 className="group relative w-full sm:w-auto px-10 sm:px-12 py-5 sm:py-6 bg-white/95 backdrop-blur-sm text-slate-900 border-2 border-white/30 rounded-2xl font-bold text-lg sm:text-xl shadow-2xl shadow-black/20 hover:shadow-black/30 transition-all duration-300 hover:scale-110 hover:bg-white focus:outline-none focus:ring-4 focus:ring-white/50 focus:ring-offset-4 focus:ring-offset-transparent transform hover:-translate-y-1"

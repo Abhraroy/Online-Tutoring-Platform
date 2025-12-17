@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-
 const followSchema = new Schema({
   tutorId: {
     type: Schema.Types.ObjectId,

@@ -14,15 +14,16 @@ const isProduction = process.env.NODE_ENV === "production";
 const sameSite = isProduction ? "none" : "lax";
 console.log("isProduction", isProduction);
 console.log("sameSite", sameSite);
-export const registerTutor = async (req, res) => { //healthy
+export const registerTutor = async (req, res) => {
+  //healthy
   try {
-    const { 
-      name, 
-      email, 
-      password, 
+    const {
+      name,
+      email,
+      password,
       subjects,
-      hourlyRate, 
-      lowerGrade, 
+      hourlyRate,
+      lowerGrade,
       upperGrade,
       phone,
       experience,
@@ -30,15 +31,26 @@ export const registerTutor = async (req, res) => { //healthy
       bio,
       availability,
       certifications,
-      languages
+      languages,
     } = req.body;
 
     console.log("Tutor signup data", req.body);
-    if (!name || !email || !password || !hourlyRate || !lowerGrade || !upperGrade) {
-      return res.status(400).json({ message: "All required fields are missing" });
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !hourlyRate ||
+      !lowerGrade ||
+      !upperGrade
+    ) {
+      return res
+        .status(400)
+        .json({ message: "All required fields are missing" });
     }
     if (!subjects || subjects.length === 0) {
-      return res.status(400).json({ message: "At least one subject is required" });
+      return res
+        .status(400)
+        .json({ message: "At least one subject is required" });
     }
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: "Invalid email" });
@@ -59,32 +71,34 @@ export const registerTutor = async (req, res) => { //healthy
       name,
       email,
       password: hashedPassword,
-      phone: phone || '',
+      phone: phone || "",
       subjects: subjects || [],
       hourlyRate,
       lowerGrade,
       upperGrade,
-      experience: experience || '',
-      education: education || '',
-      bio: bio || '',
+      experience: experience || "",
+      education: education || "",
+      bio: bio || "",
       availability: availability || [],
-      certifications: certifications || '',
-      languages: languages || []
+      certifications: certifications || "",
+      languages: languages || [],
     });
     const ttoken = jwt.sign(
       { id: tutor._id, role: "tutor" },
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
-    res
-      .status(201)
-      .json({ message: "Tutor created successfully", tutor });
+    res.cookie("token", ttoken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: sameSite,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    res.status(201).json({ message: "Tutor created successfully", tutor });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 export const loginTutor = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -117,7 +131,12 @@ export const loginTutor = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "72h" }
     );
-    res.cookie("token", ttoken, { httpOnly: true, secure: isProduction, sameSite: sameSite, maxAge: 72 * 60 * 60 * 1000 });
+    res.cookie("token", ttoken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: sameSite,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
     res.status(201).json({
       message: "Tutor logged in successfully",
       existingTutor,
@@ -126,33 +145,71 @@ export const loginTutor = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 export const updateTutorProfile = async (req, res) => {
-  try{
-    const tutorId = req.userId;
-    const role = req.role;
-    if (role !== "tutor") {
-      return res.status(403).json({ message: "Forbidden: Access denied" });
-    }
-    const { name, email, phone, subjects, hourlyRate, lowerGrade, upperGrade, experience, education, bio, availability, certifications, languages } = req.body;
-    const tutor = await TutorModel.findByIdAndUpdate(tutorId, { name, email, phone, subjects, hourlyRate, lowerGrade, upperGrade, experience, education, bio, availability, certifications, languages });
-    if(!tutor){
-      return res.status(400).json({ message: "Tutor not found" });
-    }
-    res.status(201).json({ message: "Tutor profile updated successfully", tutor });
-  }catch(error){
-    res.status(500).json({message: error.message});
-  }
-};
-
-export const createTutorSession = async (req, res) => { //healthy
   try {
     const tutorId = req.userId;
     const role = req.role;
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const { subject, date, duration, fee, topic, grade, availableSlots, status } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      subjects,
+      hourlyRate,
+      lowerGrade,
+      upperGrade,
+      experience,
+      education,
+      bio,
+      availability,
+      certifications,
+      languages,
+    } = req.body;
+    const tutor = await TutorModel.findByIdAndUpdate(tutorId, {
+      name,
+      email,
+      phone,
+      subjects,
+      hourlyRate,
+      lowerGrade,
+      upperGrade,
+      experience,
+      education,
+      bio,
+      availability,
+      certifications,
+      languages,
+    });
+    if (!tutor) {
+      return res.status(400).json({ message: "Tutor not found" });
+    }
+    res
+      .status(201)
+      .json({ message: "Tutor profile updated successfully", tutor });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const createTutorSession = async (req, res) => {
+  //healthy
+  try {
+    const tutorId = req.userId;
+    const role = req.role;
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+    const {
+      subject,
+      date,
+      duration,
+      fee,
+      topic,
+      grade,
+      availableSlots,
+      status,
+    } = req.body;
     const session = await SessionModel.create({
       tutorId,
       subject,
@@ -162,10 +219,10 @@ export const createTutorSession = async (req, res) => { //healthy
       topic,
       grade,
       availableSlots,
-      status: status || "open"
+      status: status || "open",
     });
     await session.save();
-    if(!session){
+    if (!session) {
       return res.status(400).json({ message: "Session not created" });
     }
     res.status(201).json({ message: "Session created successfully", session });
@@ -174,16 +231,16 @@ export const createTutorSession = async (req, res) => { //healthy
   }
 };
 
-export const updateTutorSession = async (req, res) => { //healthy
+export const updateTutorSession = async (req, res) => {
+  //healthy
   try {
     const tutorId = req.userId;
     const role = req.role;
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const { sessionId, subject, date, duration, fee, topic, grade, availableSlots, status } = req.body;
-    const session = await SessionModel.findByIdAndUpdate(sessionId, {
-      tutorId,
+    const {
+      sessionId,
       subject,
       date,
       duration,
@@ -191,10 +248,33 @@ export const updateTutorSession = async (req, res) => { //healthy
       topic,
       grade,
       availableSlots,
-      status: status || "open"
-    });
-    await session.save();
-    if(!session){
+      status,
+    } = req.body;
+    // First check if session exists and belongs to this tutor
+    const existingSession = await SessionModel.findById(sessionId);
+    if (!existingSession) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+    if (existingSession.tutorId.toString() !== tutorId.toString()) {
+      return res.status(403).json({ message: "Forbidden: You can only update your own sessions" });
+    }
+    // Update the session and return the updated document
+    const session = await SessionModel.findByIdAndUpdate(
+      sessionId,
+      {
+        tutorId,
+        subject,
+        date,
+        duration,
+        fee,
+        topic,
+        grade,
+        availableSlots,
+        status: status || "open",
+      },
+      { new: true }
+    );
+    if (!session) {
       return res.status(400).json({ message: "Session not updated" });
     }
     res.status(200).json({ message: "Session updated successfully", session });
@@ -210,7 +290,7 @@ export const getTutorSessions = async (req, res) => {
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const sessions = await SessionModel.find({tutorId});
+    const sessions = await SessionModel.find({ tutorId });
     if (sessions.length === 0) {
       return res.status(404).json({ message: "No sessions found" });
     }
@@ -221,101 +301,90 @@ export const getTutorSessions = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 export const getBookedTutorSessions = async (req, res) => {
   try {
     const tutorId = req.userId;
     const role = req.role;
-    if(role !== "tutor"){
-      return res.status(403).json({message: "Forbidden: Access denied"});
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const bookedSessions = await BookingModel.find({tutorId, status: "pending"}).populate("studentId", "name email phone").populate("sessionId", "subject topic date duration capacity fee");
-    if(bookedSessions.length === 0){
-      return res.status(404).json({message: "No sessions found"});
+    const bookedSessions = await BookingModel.find({
+      tutorId,
+      status: "pending",
+    })
+      .populate("studentId", "name email phone")
+      .populate("sessionId", "subject topic date duration capacity fee");
+    if (bookedSessions.length === 0) {
+      return res.status(404).json({ message: "No sessions found" });
     }
-    console.log(bookedSessions)
-    res.status(200).json({message: "Sessions fetched successfully", bookedSessions});
-  }catch(error){
-    res.status(500).json({message: error.message});
+    console.log(bookedSessions);
+    res
+      .status(200)
+      .json({ message: "Sessions fetched successfully", bookedSessions });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-}
-
-
-
-
+};
 
 export const deleteTutorSession = async (req, res) => {
-  try{
+  try {
     const tutorId = req.userId;
     const role = req.role;
-    if(role !== "tutor"){
-      return res.status(403).json({message: "Forbidden: Access denied"});
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const {sessionId} = req.params;
+    const { sessionId } = req.params;
     const session = await SessionModel.findById(sessionId);
-    if(!session){
-      return res.status(404).json({message: "Session not found"});
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
     }
     await session.deleteOne();
-    res.status(200).json({message: "Session deleted successfully"});
-  }catch(error){
-    res.status(500).json({message: error.message});
+    res.status(200).json({ message: "Session deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-}
-
-
+};
 export const deleteBookedTutorSession = async (req, res) => {
-  try{
+  try {
     const tutorId = req.userId;
     const role = req.role;
-    if(role !== "tutor"){
-      return res.status(403).json({message: "Forbidden: Access denied"});
+    if (role !== "tutor") {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const {sessionId} = req.params;
+    const { sessionId } = req.params;
     const bookingSession = await BookingModel.findById(sessionId);
-    const session = await SessionModel.findById({_id: bookingSession.sessionId});
-    console.log(bookingSession,session)
-    if(!bookingSession || !session){
-      return res.status(404).json({message: "Booking session not found"});
+    const session = await SessionModel.findById({
+      _id: bookingSession.sessionId,
+    });
+    console.log(bookingSession, session);
+    if (!bookingSession || !session) {
+      return res.status(404).json({ message: "Booking session not found" });
     }
     const studentId = bookingSession.studentId;
     const student = await StudentModel.findById(studentId);
-    if(!student){
-      return res.status(404).json({message: "Student not found"});
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
     await bookingSession.deleteOne();
     await session.deleteOne();
-    res.status(200).json({message: "Booking session deleted successfully"});
-  }catch(error){
-    res.status(500).json({message: error.message});
+    res.status(200).json({ message: "Booking session deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
 export const logoutTutor = async (req, res) => {
   try {
-    res.clearCookie("token",{
+    res.clearCookie("token", {
       httpOnly: true,
       secure: isProduction,
       sameSite: sameSite,
-    })
-    res.status(200).json({message: "Tutor logged out successfully"});
+    });
+    res.status(200).json({ message: "Tutor logged out successfully" });
   } catch (error) {
-    res.status(500).json({message: error.message});
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const getTutorProfile = async (req, res) => {
   try {
@@ -328,11 +397,13 @@ export const getTutorProfile = async (req, res) => {
     if (!tutor) {
       return res.status(404).json({ message: "Tutor not found" });
     }
-    res.status(200).json({ message: "Tutor profile fetched successfully", tutor });
+    res
+      .status(200)
+      .json({ message: "Tutor profile fetched successfully", tutor });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const getHiredByStudents = async (req, res) => {
   try {
@@ -341,15 +412,20 @@ export const getHiredByStudents = async (req, res) => {
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const hiredStudents = await HiringModel.find({tutorId}).populate("studentId", "name email phone");
+    const hiredStudents = await HiringModel.find({ tutorId }).populate(
+      "studentId",
+      "name email phone"
+    );
     if (hiredStudents.length === 0) {
-      return res.status(404).json({message: "No students hired"});
+      return res.status(404).json({ message: "No students hired" });
     }
-    res.status(200).json({message: "Students hired successfully", hiredStudents});
+    res
+      .status(200)
+      .json({ message: "Students hired successfully", hiredStudents });
   } catch (error) {
-    res.status(500).json({message: error.message});
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const tutorPastSessions = async (req, res) => {
   try {
@@ -358,15 +434,25 @@ export const tutorPastSessions = async (req, res) => {
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const pastSessions = await BookingModel.find({ tutorId, status: "completed" }).populate("sessionId", "subject topic date duration capacity fee availableSlots status grade").populate("studentId", "name email phone");
+    const pastSessions = await BookingModel.find({
+      tutorId,
+      status: "completed",
+    })
+      .populate(
+        "sessionId",
+        "subject topic date duration capacity fee availableSlots status grade"
+      )
+      .populate("studentId", "name email phone");
     if (pastSessions.length === 0) {
-      return res.status(404).json({message: "No past sessions found"});
+      return res.status(404).json({ message: "No past sessions found" });
     }
-    res.status(200).json({message: "Past sessions fetched successfully", pastSessions});
+    res
+      .status(200)
+      .json({ message: "Past sessions fetched successfully", pastSessions });
   } catch (error) {
-    res.status(500).json({message: error.message});
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 export const EditBookedTutorSession = async (req, res) => {
   console.log("EditBookedTutorSession", req.body);
@@ -377,7 +463,7 @@ export const EditBookedTutorSession = async (req, res) => {
     if (role !== "tutor") {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
-    const { sessionId } = req.params; 
+    const { sessionId } = req.params;
     console.log("sessionId", sessionId); // booking id
     const booking = await BookingModel.findById(sessionId);
 
@@ -405,6 +491,6 @@ export const EditBookedTutorSession = async (req, res) => {
 
     res.status(200).json({ message: "Booking marked as completed", booking });
   } catch (error) {
-    res.status(500).json({message: error.message});
+    res.status(500).json({ message: error.message });
   }
-}
+};

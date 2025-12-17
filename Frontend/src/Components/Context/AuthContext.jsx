@@ -4,7 +4,6 @@ import useZustandStore from './ZustandStore';
 
 const AuthContext = createContext();
 
-
 export const AuthProvider = ({children}) => {
     const {login, setLogin, user, setUser, userData, setUserData} = useZustandStore();
     const [loading,setLoading] = useState(true);
@@ -110,7 +109,6 @@ export const AuthProvider = ({children}) => {
         </AuthContext.Provider>
     )
 }
-
 
 export const useAuth = () => useContext(AuthContext);
 

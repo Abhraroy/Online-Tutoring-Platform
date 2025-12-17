@@ -40,15 +40,9 @@ app.use(cookieParser());
 app.set("trust proxy", 1);
 app.enable("trust proxy");
 
-
-
-
-
-
 app.use("/student", StudentRoutes);
 app.use("/tutor", TutorRoutes);
 app.use("/api/user",userRoutes);
-
 
 app.listen(3000, async() => {
     try{
@@ -58,5 +52,4 @@ app.listen(3000, async() => {
         console.log(error);
     }
 });
-
 
