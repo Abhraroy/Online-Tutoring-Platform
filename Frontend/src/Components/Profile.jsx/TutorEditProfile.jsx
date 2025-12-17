@@ -177,23 +177,19 @@ const TutorEditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-600 py-6 lg:py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center animate-gradient-xy relative overflow-hidden">
-
-      {/* Background decoration circles */}
-      <div className="absolute top-10 left-10 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-6 lg:py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden">
 
       <div className="max-w-7xl w-full space-y-4 lg:space-y-6 relative z-10">
         <div className="text-center transform transition-all duration-500 hover:scale-105">
-          <h2 className="mt-2 lg:mt-4 text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-200 tracking-tight drop-shadow-sm">
+          <h2 className="mt-2 lg:mt-4 text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
             Edit Profile
           </h2>
-          <p className="mt-1 lg:mt-2 text-base lg:text-lg text-indigo-100 font-medium">
+          <p className="mt-1 lg:mt-2 text-base lg:text-lg text-slate-600 font-medium">
             Edit your tutor profile information
           </p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-xl py-4 lg:py-6 px-4 shadow-[0_20px_50px_rgba(79,_70,_229,_0.6)] sm:rounded-3xl sm:px-6 lg:px-8 border border-white/50 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(79,_70,_229,_0.8)]">
+        <div className="bg-white py-4 lg:py-6 px-4 shadow-lg sm:rounded-3xl sm:px-6 lg:px-8 border border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
           <form className="space-y-4 lg:space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
               {/* Personal Information Section */}

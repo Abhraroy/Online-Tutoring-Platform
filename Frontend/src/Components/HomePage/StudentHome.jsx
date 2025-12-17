@@ -393,6 +393,7 @@ function StudentHome() {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Sessions</h1>
+                  <p className="text-gray-600 text-lg">Grade: {userData.grade}</p>
                   <p className="text-gray-600 text-lg">Browse and book sessions from expert tutors</p>
                   <div className="mt-3 flex items-center gap-2">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

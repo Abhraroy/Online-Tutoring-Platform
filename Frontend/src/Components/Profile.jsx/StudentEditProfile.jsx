@@ -118,24 +118,19 @@ const StudentEditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 py-6 lg:py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center animate-gradient-xy relative overflow-hidden">
-
-      {/* Background decoration circles */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-6 lg:py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative overflow-hidden">
 
       <div className="max-w-7xl w-full space-y-4 lg:space-y-6 relative z-10">
         <div className="text-center transform transition-all duration-500 hover:scale-105">
-          <h2 className="mt-2 lg:mt-4 text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-indigo-200 tracking-tight drop-shadow-sm">
+          <h2 className="mt-2 lg:mt-4 text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
             Edit Profile
           </h2>
-          <p className="mt-1 lg:mt-2 text-base lg:text-lg text-indigo-100 font-medium">
+          <p className="mt-1 lg:mt-2 text-base lg:text-lg text-slate-600 font-medium">
             Edit your profile information
           </p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-xl py-4 lg:py-6 px-4 shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] sm:rounded-3xl sm:px-6 lg:px-8 border border-white/50 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(8,_112,_184,_0.9)]">
+        <div className="bg-white py-4 lg:py-6 px-4 shadow-lg sm:rounded-3xl sm:px-6 lg:px-8 border border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
           <form className="space-y-4 lg:space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
 
