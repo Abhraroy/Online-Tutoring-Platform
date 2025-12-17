@@ -44,10 +44,13 @@ app.use("/student", StudentRoutes);
 app.use("/tutor", TutorRoutes);
 app.use("/api/user",userRoutes);
 
-app.listen(3000, async() => {
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, async() => {
     try{
         await DB_CONNECT();
-        console.log("Server is running on port 3000");
+        console.log(`Server is running on port ${PORT}`);
     }catch(error){
         console.log(error);
     }
