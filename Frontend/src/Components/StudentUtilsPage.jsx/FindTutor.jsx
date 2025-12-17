@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../Context/AuthContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 function FindTutor() {
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +9,6 @@ function FindTutor() {
   const [followedTutors, setFollowedTutors] = useState(new Set());
   const [student, setStudent] = useState(null);
   const studentData = useAuth().userData;
-  const navigate = useNavigate();
   useEffect(() => {
     setStudent(studentData);
   }, [studentData]);
@@ -74,7 +72,7 @@ function FindTutor() {
   };
 
   const handleHire = async (tutor) => {
-    
+
     // Navigate to tutor's sessions or create a booking
     console.log('Hire tutor:', tutor);
     console.log('Student:', student);
@@ -82,20 +80,50 @@ function FindTutor() {
     try {
       const response = await axios.post(`/student/hire/${tutor._id}`, { tutorId: tutor._id }, { withCredentials: true });
       const emailResponse = await axios.post(`/student/send-email`,
-         { to: tutor.email, subject: "You have been hired",
-          text: `You have been hired by a student. Please contact them to schedule a session.
-          Student Name: ${student.name}
-          Student Email: ${student.email}
-          Student Phone: ${student.phone}
-          Student Grade: ${student.grade}
-          Student Subjects: ${student.subjects.join(', ')}` }, { withCredentials: true });
+        {
+          to: tutor.email,
+          subject: "🎉 You've Been Hired as a Tutor!",
+          text: `
+Hello ${tutor.name},
+
+Great news! A student has hired you on our platform.
+
+📌 Student Details:
+• Name: ${student.name}
+• Email: ${student.email}
+• Phone: ${student.phone || 'Not provided'}
+• Grade: ${student.grade || 'Not specified'}
+• Subjects: ${student.subjects?.join(", ") || 'Not specified'}
+
+Please reach out to the student to discuss availability and schedule your first session.
+
+Best regards,
+Online Tutoring Platform Team
+          `.trim()
+        }, { withCredentials: true });
       const studentEmailResponse = await axios.post(`/student/send-email`,
-         { to: student.email, subject: "You have a tutor",
-          text: `You have  hired a tutor. Please contact them to schedule a session.
-          Tutor Name: ${tutor.name}
-          Tutor Email: ${tutor.email}
-          Tutor Phone: ${tutor.phone}
-          Tutor Subjects: ${tutor.subjects.join(', ')}` }, { withCredentials: true });
+        {
+          to: student.email,
+          subject: "✅ Tutor Hired Successfully!",
+          text: `
+Hello ${student.name},
+
+You have successfully hired a tutor. Below are the tutor's details:
+
+📌 Tutor Details:
+• Name: ${tutor.name}
+• Email: ${tutor.email}
+• Phone: ${tutor.phone || 'Not provided'}
+• Subjects: ${tutor.subjects?.join(", ") || 'Not specified'}
+
+Please contact your tutor to schedule your sessions at a convenient time.
+
+We wish you a great learning experience!
+
+Best regards,
+Online Tutoring Platform Team
+          `.trim()
+        }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         toast.success(`Tutor ${tutor.name} hired successfully`);
       } else if (response.status === 409) {
@@ -109,16 +137,6 @@ function FindTutor() {
       }
       console.error('Error hiring tutor:', error);
     }
-  };
-
-  const handleViewDetail = (tutor) => {
-    if (!tutor?._id) return;
-    navigate(`/tutor-detail/${tutor._id}`, {
-      state: {
-        tutor,
-        fromFindTutors: true
-      }
-    });
   };
 
   if (loading) {
@@ -173,14 +191,13 @@ function FindTutor() {
             {tutors.map((tutor) => (
               <div
                 key={tutor._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start cursor-pointer group"
-                onClick={() => handleViewDetail(tutor)}
+                className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6 min-w-[260px] sm:min-w-[300px] md:min-w-0 snap-start"
               >
                 {/* Tutor Header */}
                 <div className="mb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-indigo-700 transition-colors">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
                         {tutor.name}
                       </h3>
                       <p className="text-sm text-gray-500">{tutor.email}</p>

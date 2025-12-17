@@ -37,27 +37,78 @@ function SessionDetail({ showBookButton: propShowBookButton = true }) {
       setBooking(true) 
       
       const response = await axios.post(`/student/book/${sessionId}`, {}, { withCredentials: true })
+      
+      // Format date and time for email
+      const sessionDate = session.date ? new Date(session.date).toLocaleDateString(undefined, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      }) : 'Not specified';
+      const sessionTime = session.date ? new Date(session.date).toLocaleTimeString(undefined, {
+        hour: '2-digit', minute: '2-digit', hour12: true
+      }) : 'Not specified';
+      
       const emailResponse = await axios.post(`/student/send-email`,
-         { to: session.tutorId.email, subject: "Your session has been booked",
-          text: `Your session have been booked by a student.
-          Student Name: ${userData.name}
-          Student Email: ${userData.email}
-          Student Phone: ${userData.phone}
-          Student Grade: ${userData.grade}
-          Student Subjects: ${userData.subjects.join(', ')}` }, { withCredentials: true });
+         { 
+           to: session.tutorId.email,
+           subject: "📅 Your Session Has Been Booked!",
+           text: `
+Hello ${session.tutorId.name},
+
+Great news! Your tutoring session has been booked by a student.
+
+📌 Session Details:
+• Topic: ${session.topic || session.subject}
+• Subject: ${session.subject}
+• Date: ${sessionDate}
+• Time: ${sessionTime}
+• Duration: ${session.duration} minutes
+• Grade Level: ${session.grade || 'Not specified'}
+• Session Fee: $${session.fee?.toFixed(2) || '0.00'}
+
+📌 Student Details:
+• Name: ${userData.name}
+• Email: ${userData.email}
+• Phone: ${userData.phone || 'Not provided'}
+• Grade: ${userData.grade || 'Not specified'}
+• Subjects: ${userData.subjects?.join(", ") || 'Not specified'}
+
+Please prepare for the session and contact the student if you need any additional information.
+
+Best regards,
+Online Tutoring Platform Team
+           `.trim()
+         }, { withCredentials: true });
       const studentEmailResponse = await axios.post(`/student/send-email`,
-         { to: userData.email, subject: "Your have booked a session",
-          text: `Your session have been booked by a student.
-          Session Topic: ${session.topic}
-          Session Date: ${session.date}
-          Session Time: ${session.time}
-          Session Duration: ${session.duration}
-          Session Grade: ${session.grade}
-          Session Fee: ${session.fee}
-          Tutor Name: ${session.tutorId.name}
-          Tutor Email: ${session.tutorId.email}
-          Tutor Phone: ${session.tutorId.phone}
-          Tutor Subjects: ${session.tutorId.subjects.join(', ')}` }, { withCredentials: true });
+         { 
+           to: userData.email,
+           subject: "✅ Session Booking Confirmed!",
+           text: `
+Hello ${userData.name},
+
+Your session booking has been confirmed!
+
+📌 Session Details:
+• Topic: ${session.topic || session.subject}
+• Subject: ${session.subject}
+• Date: ${sessionDate}
+• Time: ${sessionTime}
+• Duration: ${session.duration} minutes
+• Grade Level: ${session.grade || 'Not specified'}
+• Session Fee: $${session.fee?.toFixed(2) || '0.00'}
+
+📌 Tutor Details:
+• Name: ${session.tutorId.name}
+• Email: ${session.tutorId.email}
+• Phone: ${session.tutorId.phone || 'Not provided'}
+• Subjects: ${session.tutorId.subjects?.join(", ") || 'Not specified'}
+
+Please mark your calendar and be ready for the session. If you have any questions, feel free to contact your tutor directly.
+
+We hope you have a great learning experience!
+
+Best regards,
+Online Tutoring Platform Team
+           `.trim()
+         }, { withCredentials: true });
       if (response.status === 200 && emailResponse.status === 200) {
         toast.success('Session booked successfully');
       } 
