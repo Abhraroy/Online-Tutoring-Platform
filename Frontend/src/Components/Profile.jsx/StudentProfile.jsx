@@ -41,18 +41,18 @@ function StudentProfile() {
         {/* Profile Card */}
         <div className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 px-8 py-6">
+          <div className="bg-gradient-to-r from-indigo-50 via-blue-50 to-purple-50 px-8 py-6 border-b border-gray-200">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/30">
-                <span className="text-3xl font-bold text-white">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-indigo-100 shadow-sm">
+                <span className="text-3xl font-bold text-indigo-700">
                   {userData?.name?.charAt(0)?.toUpperCase() || 'S'}
                 </span>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
                   {userData?.name || 'Student'}
                 </h2>
-                <p className="text-white/90 text-sm md:text-base">{userData?.email || 'No email'}</p>
+                <p className="text-slate-600 text-sm md:text-base">{userData?.email || 'No email'}</p>
               </div>
             </div>
           </div>

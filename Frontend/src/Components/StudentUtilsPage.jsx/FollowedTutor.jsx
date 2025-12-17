@@ -186,13 +186,7 @@ const FollowedTutor = () => {
                   </div>
                 )}
 
-                <div className="flex items-center justify-end gap-3 mt-auto">
-                  <a
-                    href="/booked-sessions"
-                    className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    View Sessions
-                  </a>
+                <div className="flex items-center justify-end mt-auto">
                   <button
                     onClick={() => handleUnfollow(tutor._id)}
                     className="px-3 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200"
