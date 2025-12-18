@@ -10,16 +10,13 @@ const StudentSignup = () => {
   const {  loading, error } = useAuth();
   const navigate = useNavigate();
 
+  // Navigate to student home when user data is loaded after successful signup
   useEffect(() => {
-    if (!loading && user?.role === "student") {
-      console.log("StudentSignup user",user);
-      navigate("/student-home");
+    if (!loading && login && user?.role === "student") {
+      console.log("StudentSignup - navigating to student-home", user);
+      navigate("/student-home", { replace: true });
     }
-    if (error) {
-      console.log("StudentSignup error", error);
-      navigate("/student-signup");
-    }
-  }, [loading, user, navigate, error]);
+  }, [loading, login, user, navigate]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -115,12 +112,14 @@ const StudentSignup = () => {
         }
         const response = await axios.post("/student/register", payload, { withCredentials: true });
         console.log(response.data);
-        if (response.status !== 201) {
-          navigate("/login");
+        if (response.status === 201) {
+          setLogin(true);
+          toast.success("Account created successfully! Welcome!");
+          // Don't navigate immediately - let the useEffect handle navigation after user data is loaded
         }
         else {
-          setLogin(true);
-          navigate("/student-home", { replace: true });
+          toast.error("Registration failed");
+          navigate("/student-signup");
         }
 
       } catch (error) {

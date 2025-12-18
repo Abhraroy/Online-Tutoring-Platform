@@ -8,15 +8,13 @@ const TutorSignup = () => {
   const { user, loading, error } = useAuth();
   const { login, setLogin, setUser, setUserData } = useZustandStore();
   const navigate = useNavigate();
+  // Navigate to tutor home when user data is loaded after successful signup
   useEffect(() => {
-    if (!loading && user?.role === "tutor") {
-      navigate("/tutor-home");
+    if (!loading && login && user?.role === "tutor") {
+      console.log("TutorSignup - navigating to tutor-home", user);
+      navigate("/tutor-home", { replace: true });
     }
-    if (error) {
-      console.log("TutorSignup error", error);
-      navigate("/tutor-signup");
-    }
-  }, [loading, user, navigate, error]);
+  }, [loading, login, user, navigate]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -160,12 +158,14 @@ const TutorSignup = () => {
         const response = await axios.post('/tutor/register', payload, { withCredentials: true });
         console.log('Registration successful:', response.data);
         // Handle successful registration (redirect, show success message, etc.)
-        if (response.status !== 201) {
-          navigate("/login");
+        if (response.status === 201) {
+          setLogin(true);
+          toast.success("Account created successfully! Welcome!");
+          // Don't navigate immediately - let the useEffect handle navigation after user data is loaded
         }
         else {
-          setLogin(true);
-          navigate("/tutor-home", { replace: true });
+          toast.error("Registration failed");
+          navigate("/tutor-signup");
         }
       } catch (error) {
         console.error('Registration error:', error.response?.data || error.message);
