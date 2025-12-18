@@ -61,16 +61,17 @@ const StudentLogin = () => {
       }
       const response = await axios.post("/student/login", payload, { withCredentials: true });
       console.log("Student login response",response.data);
-      if(response.status !== 201){
-        toast.error("Student login failed");
-        navigate("/");
-      }
-      else{
+      if(response.status === 201){
         // Set login first, then let AuthContext fetch the user data
         // Don't manually set user/userData here as AuthContext will handle it
         setLogin(true);
         toast.success("Student logged in successfully");
-        // Navigate after a brief delay to allow AuthContext to update
+        // Don't navigate immediately - let the useEffect handle navigation after user data is loaded
+      }
+      else{
+        toast.error("Student login failed");
+        setLogin(false);
+        navigate("/");
       }
     }catch(error){
       console.log("Student login error",error);

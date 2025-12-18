@@ -9,58 +9,32 @@ export const AuthProvider = ({children}) => {
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState(null);
 
+    // Initial auth check on mount
     useEffect(() => {
         const checkAuth = async () => {
-            console.log("AuthContext checkAuth");
+            console.log("AuthContext - initial checkAuth");
+            setLoading(true);
+            setError(null);
             try {
-              const res = await axios.get("/api/user", { withCredentials: true }); // cookie-based
-              setUser(res.data.decoded);
-              console.log("AuthContext",res.data.decoded);
-              setLogin(true);
-              console.log("AuthContext login",res);
-            } catch {
-              console.log("AuthContext error",error);
-              setUser(null);
-              setLogin(false);
-            } finally {
-              setLoading(false);
-            }
-        }
-        checkAuth();
-        // If login is true, fetch user data
-        setLoading(true);
-        setError(null);
-
-        const fetchUser = async () => {
-            // Only fetch if login is still true (check again in case it changed)
-            if (!login) {
-                console.log("Login state changed to false, skipping fetch");
-                setLoading(false);
-                return;
-            }
-
-            try {
-                // First, get the decoded token with role and id
-                const response = await axios.get('/api/user',{withCredentials:true});
-                console.log("AuthContext",response.data);
-                const decoded = response.data.decoded;
+                const res = await axios.get("/api/user", { withCredentials: true });
+                const decoded = res.data.decoded;
                 if (decoded) {
                     setUser(decoded);
-                    setError(null);
-                    console.log("AuthContext user",decoded);
+                    setLogin(true);
+                    console.log("AuthContext - user authenticated:", decoded);
 
-                    // Then, fetch full user data based on role
+                    // Fetch full user profile data
                     if (decoded.role && decoded.id) {
                         try {
                             let profileResponse;
                             if (decoded.role === 'student') {
-                                profileResponse = await axios.get('/student/profile',{withCredentials:true});
+                                profileResponse = await axios.get('/student/profile', { withCredentials: true });
                                 console.log("Student profile", profileResponse.data);
                                 if (profileResponse.data && profileResponse.data.student) {
                                     setUserData(profileResponse.data.student);
                                 }
                             } else if (decoded.role === 'tutor') {
-                                profileResponse = await axios.get('/tutor/profile',{withCredentials:true});
+                                profileResponse = await axios.get('/tutor/profile', { withCredentials: true });
                                 console.log("Tutor profile", profileResponse.data);
                                 if (profileResponse.data && profileResponse.data.tutor) {
                                     setUserData(profileResponse.data.tutor);
@@ -68,41 +42,108 @@ export const AuthProvider = ({children}) => {
                             }
                         } catch (profileError) {
                             console.log("Error fetching user profile:", profileError);
-                            // Don't set error here, just log it - user data is optional
-                            // Keep the decoded user even if profile fetch fails
+                            // Don't fail auth if profile fetch fails - user data is optional
                         }
                     }
-                }
-            } catch (error) {
-                console.log("AuthContext error",error);
-                // Only clear user data if it's a 401/403 (unauthorized) and login is still true
-                // Also check login state again before clearing to prevent race conditions
-                if (error.response && (error.response.status === 401 || error.response.status === 403) && login) {
-                    console.log("Unauthorized - clearing user data");
+                } else {
                     setUser(null);
                     setUserData(null);
                     setLogin(false);
-                    setError(error);
-                } else {
-                    // For other errors (network, timeout, etc.), don't clear login state
-                    // Just set error but keep login state as true
-                    // This prevents clearing login state on temporary network issues
-                    setError(error);
-                    // Don't clear user/userData on network errors or other issues
-                    // The login state should remain true if it was true before
+                }
+            } catch (err) {
+                console.log("AuthContext - not authenticated:", err.response?.status);
+                setUser(null);
+                setUserData(null);
+                setLogin(false);
+                // Only set error for auth errors, not for network errors on initial load
+                if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    setError(err);
                 }
             } finally {
                 setLoading(false);
             }
         };
         
-        // Add a small delay to ensure cookie is set after login
+        checkAuth();
+    }, []); // Run only on mount
+
+    // Fetch user profile when login state changes to true (after login/signup)
+    useEffect(() => {
+        if (!login) {
+            // If login is false, don't fetch
+            return;
+        }
+
+        // If we already have user with userData, don't fetch again
+        if (user && userData) {
+            return;
+        }
+
+        // If we have user but no userData, still fetch userData
+        // (userData is optional, but we should try to fetch it if we have a user)
+
+        const fetchUserProfile = async () => {
+            console.log("AuthContext - fetching user profile after login");
+            setLoading(true);
+            setError(null);
+            
+            try {
+                // First, get the decoded token with role and id
+                const response = await axios.get('/api/user', { withCredentials: true });
+                const decoded = response.data.decoded;
+                
+                if (decoded) {
+                    setUser(decoded);
+                    console.log("AuthContext - user fetched:", decoded);
+
+                    // Then, fetch full user data based on role
+                    if (decoded.role && decoded.id) {
+                        try {
+                            let profileResponse;
+                            if (decoded.role === 'student') {
+                                profileResponse = await axios.get('/student/profile', { withCredentials: true });
+                                console.log("Student profile", profileResponse.data);
+                                if (profileResponse.data && profileResponse.data.student) {
+                                    setUserData(profileResponse.data.student);
+                                }
+                            } else if (decoded.role === 'tutor') {
+                                profileResponse = await axios.get('/tutor/profile', { withCredentials: true });
+                                console.log("Tutor profile", profileResponse.data);
+                                if (profileResponse.data && profileResponse.data.tutor) {
+                                    setUserData(profileResponse.data.tutor);
+                                }
+                            }
+                        } catch (profileError) {
+                            console.log("Error fetching user profile:", profileError);
+                            // Don't fail auth if profile fetch fails
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log("AuthContext - error fetching user:", err);
+                // Only clear user data if it's a 401/403 (unauthorized)
+                if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                    console.log("Unauthorized - clearing user data");
+                    setUser(null);
+                    setUserData(null);
+                    setLogin(false);
+                    setError(err);
+                } else {
+                    // For other errors (network, timeout, etc.), keep login state
+                    setError(err);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Add a small delay to ensure cookie is set after login/signup
         const timeoutId = setTimeout(() => {
-            fetchUser();
-        }, 50);
+            fetchUserProfile();
+        }, 100);
         
         return () => clearTimeout(timeoutId);
-    }, [login, setUser, setUserData, setLogin]);
+    }, [login, setUser, setUserData, setLogin, user, userData]);
     return (
         <AuthContext.Provider value={{user, userData, loading, error}}>
             {children}

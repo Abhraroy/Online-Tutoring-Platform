@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useZustandStore from '../Context/ZustandStore';
@@ -6,6 +6,7 @@ import { useAuth } from '../Context/AuthContext';
 import { toast } from 'react-toastify';
 const TutorLogin = () => {
   const {login,setLogin} = useZustandStore();
+  const {user, loading} = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -13,6 +14,14 @@ const TutorLogin = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  // Navigate to tutor home when user data is loaded after successful login
+  useEffect(() => {
+    if (!loading && login && user?.role === "tutor") {
+      console.log("TutorLogin - navigating to tutor-home", user);
+      navigate("/tutor-home", { replace: true });
+    }
+  }, [loading, login, user, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,14 +53,14 @@ const TutorLogin = () => {
         }
         const response = await axios.post("/tutor/login", payload, { withCredentials: true });
         console.log("Tutor login response",response.data);
-        setLogin(true);
-        if(response.status !== 201){
-          toast.error("Tutor login failed");
-          navigate("/tutor-login");
-        } else {
-          setLogin(false);
+        if(response.status === 201){
+          setLogin(true);
           toast.success("Tutor logged in successfully");
-          navigate("/tutor-home",{replace:true});
+          // Don't navigate immediately - let the useEffect handle navigation after user data is loaded
+        } else {
+          toast.error("Tutor login failed");
+          setLogin(false);
+          navigate("/tutor-login");
         }
       }catch(error){
         console.log("Tutor login error",error);
