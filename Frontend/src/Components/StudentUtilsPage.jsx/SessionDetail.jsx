@@ -62,7 +62,7 @@ Great news! Your tutoring session has been booked by a student.
 • Time: ${sessionTime}
 • Duration: ${session.duration} minutes
 • Grade Level: ${session.grade || 'Not specified'}
-• Session Fee: $${session.fee?.toFixed(2) || '0.00'}
+• Session Fee: ₹${session.fee?.toFixed(2) || '0.00'}
 
 📌 Student Details:
 • Name: ${userData.name}
@@ -93,7 +93,7 @@ Your session booking has been confirmed!
 • Time: ${sessionTime}
 • Duration: ${session.duration} minutes
 • Grade Level: ${session.grade || 'Not specified'}
-• Session Fee: $${session.fee?.toFixed(2) || '0.00'}
+• Session Fee: ₹${session.fee?.toFixed(2) || '0.00'}
 
 📌 Tutor Details:
 • Name: ${session.tutorId.name}
@@ -109,7 +109,7 @@ Best regards,
 Online Tutoring Platform Team
            `.trim()
          }, { withCredentials: true });
-      if (response.status === 200 && emailResponse.status === 200) {
+      if (response.status === 200 || emailResponse.status === 200) {
         toast.success('Session booked successfully');
       } 
       console.log(response.data)
@@ -363,7 +363,7 @@ Online Tutoring Platform Team
                       <div className="flex-1">
                         <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Session Fee</p>
                         <p className="text-2xl font-extrabold text-indigo-600 group-hover/item:text-pink-600 transition-all duration-300">
-                          ${session.fee?.toFixed(2) || '0.00'}
+                          ₹{session.fee?.toFixed(2) || '0.00'}
                         </p>
                       </div>
                     </div>
@@ -459,7 +459,7 @@ Online Tutoring Platform Team
                         <div className="flex-1">
                           <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Hourly Rate</p>
                           <p className="text-lg font-bold text-gray-900 group-hover/item:text-green-600 transition-colors duration-300">
-                            <span className="text-2xl">${session.tutorId.hourlyRate?.toFixed(2) || '0.00'}</span>
+                            <span className="text-2xl">₹{session.tutorId.hourlyRate?.toFixed(2) || '0.00'}</span>
                             <span className="text-sm text-gray-500 ml-1">/hr</span>
                           </p>
                         </div>
@@ -556,7 +556,7 @@ Online Tutoring Platform Team
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Session Fee</p>
               <p className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                ${session.fee?.toFixed(2) || '0.00'}
+                ₹{session.fee?.toFixed(2) || '0.00'}
               </p>
             </div>
             {session.availableSlots !== undefined && (
